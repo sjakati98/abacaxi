@@ -1,14 +1,16 @@
-# Application Name
-
-Rename the above with the name of your application.
+# Abacaxi
 
 # Overview
 
-Add an overview of your application here.
+Abacaxi is a web application designed to make it easier for interested parties to learn about topics in video format. It is styled like your typical Wiki page, except under each heading you have a video pertaining to the specific subtopic for the main topic. Abacaxi's main draw is that the videos are submitted and voted on by community members so that not only do users get a variety of content, they get content that community members of all knowledge levels think is appropriate and effective.
 
 # Team Members
 
-Add the team member names who are working on this application.
+The team members involved in this project include:
+* Armand Asnani
+* Sean Kelley
+* Shishir Jakati
+* Yuanxun Tao
 
 # Application Initialization
 
