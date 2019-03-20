@@ -183,10 +183,23 @@ var example_wikipedia_api_res = {
   }
 };
 
-var example_video = {
-  "url": "https://www.youtube.com/embed/Ej0ZO79Aqxw?rel=0",
-  "title": "Emus Run!"
+var thumbnail_url = function thumbnail_url(id) {
+  return 'http://i3.ytimg.com/vi/' + id + '/maxresdefault.jpg';
 };
+var video_url = function video_url(id) {
+  return 'https://youtube.com/watch?v=' + id;
+};
+
+var example_videos = [{
+  "id": "BXpu6tbFCsI",
+  "title": "Emu War - OverSimplified (Mini-Wars #4)"
+}, {
+  "id": "yb2Y2rcgnCw",
+  "title": "Emus in the House | Kangaroo Dundee"
+}, {
+  "id": "QOPZQHTNUs0",
+  "title": "The Great Emu War"
+}];
 
 // This grabs the DOM element to be used to mount React components.
 var contentNode = document.getElementById("contents");
@@ -194,8 +207,12 @@ var contentNode = document.getElementById("contents");
 var Video = function Video(props) {
   return React.createElement(
     "div",
-    { className: "card", style: { width: "18rem" } },
-    React.createElement("iframe", { className: "card-img-top", src: "https://www.youtube.com/embed/Ej0ZO79Aqxw?rel=0", frameborder: "0", allow: "accelerometer; encrypted-media; gyroscope; picture-in-picture", allowfullscreen: true }),
+    { className: "card", style: { width: "18rem", float: "left", marginRight: "8px" } },
+    React.createElement(
+      "a",
+      { href: video_url(props.video.id) },
+      React.createElement("img", { className: "card-img-top", src: thumbnail_url(props.video.id), alt: "Card image cap" })
+    ),
     React.createElement(
       "div",
       { className: "card-body" },
@@ -220,17 +237,27 @@ var Video = function Video(props) {
 
 function Section(props) {
   var CustomHeader = "h" + props.section.level;
+  var videos = example_videos.map(function (video) {
+    return React.createElement(Video, { key: video.id, video: video });
+  });
   return React.createElement(
     "div",
-    { className: "row" },
+    { className: "container", style: { paddingBottom: '15px', marginBottom: '15px', borderBottom: "1px solid grey" } },
     React.createElement(
-      CustomHeader,
-      null,
-      props.section.line
-    ),
-    React.createElement("hr", null),
-    React.createElement("div", { className: "col-12", style: { "overflowX": "auto" } }),
-    React.createElement("hr", null)
+      "div",
+      { className: "row" },
+      React.createElement(
+        CustomHeader,
+        null,
+        props.section.line
+      ),
+      React.createElement("hr", null),
+      React.createElement(
+        "div",
+        { className: "col-12", style: { "overflowX": "auto" } },
+        videos
+      )
+    )
   );
 }
 
@@ -256,25 +283,6 @@ var ContentPage = function (_React$Component) {
     _this.state = { sections: example_wikipedia_api_res.parse.sections };
     return _this;
   }
-
-  // componentDidMount() {
-  //   this.loadData();
-  // }
-
-  // loadData() {
-  //   let query_url = 'https://en.wikipedia.org/w/api.php?action=parse&format=json&page=' + state.wiki + '&prop=sections'
-  //   fetch(query_url)
-  //     .then(res => res.json())
-  //     .then(data => {
-  //       console.log('Total count of records:',
-  //         data._metadata.total_count);
-
-  //       this.setState({ sections: data.records.parse.sections });
-  //     })
-  //     .catch(err => {
-  //       console.log(err);
-  //     });
-  // }
 
   _createClass(ContentPage, [{
     key: "render",
