@@ -3,15 +3,29 @@
 
 <head>
     <meta charset="UTF-8" />
-    <title>Mock Views</title>
+    <title>View 01</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.13.0/polyfill.js"> </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.2.1/react.js">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.2.1/react-dom.js">
+    </script>
+    <style>
+        table.bordered-table th,
+        td {
+            border: 1px solid silver;
+            padding: 4px;
+        }
+
+        table.bordered-table {
+            border-collapse: collapse
+        }
+    </style>
 </head>
 
 <body>
-    <ul>
-        <li><a href="/view01.html">View 01</a></li>
-        <li><a href="/view02.html">View 02</a></li>
-        <li><a href="/view03.html">View 03</a></li>
-    </ul>
+    <!-- this is where our component will appear -->
+    <div id="contents"></div>
+    <script src="/SearchPage.js"></script>
 </body>
 
 </html>
