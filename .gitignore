@@ -1,4 +1,8 @@
-# Logs
+###### CUSTOM IGNORES ######
+static/*.js
+package-lock.json
+
+ Logs
 logs
 *.log
 npm-debug.log*
