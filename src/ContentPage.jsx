@@ -199,19 +199,64 @@ let example_videos = [
   {
     "id": "BXpu6tbFCsI",
     "title": "Emu War - OverSimplified (Mini-Wars #4)",
+    "likes": 3
   },
   {
     "id": "yb2Y2rcgnCw",
     "title": "Emus in the House | Kangaroo Dundee",
+    "likes": 2
   },
   {
     "id": "QOPZQHTNUs0",
     "title": "The Great Emu War",
+    "likes": 14
   },
 ];
 
 // This grabs the DOM element to be used to mount React components.
 var contentNode = document.getElementById("contents");
+
+class VideoLikeButton extends React.Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      likes: props.likes, // when using the database this needs to be changed because we're only using a derived state here
+      // so when using a database, there should be no need to set an initial state; this is just for PoC
+      clickedFlag: false,
+    }
+  }
+
+  handleLikeClick(){
+    if (this.state.clickedFlag){
+      this.setState(function(prevState, _) {
+        return {
+          likes: prevState.likes - 1,
+          clickedFlag: !prevState.clickedFlag
+        };
+      })
+    }
+    else{
+      this.setState(function(prevState, _) {
+        return {
+          likes: prevState.likes + 1,
+          clickedFlag: !prevState.clickedFlag
+        };
+      })
+    }
+    
+  }
+
+  render(){
+
+    let buttonTag = (this.state.clickedFlag) ? "btn-success" : "btn-light"
+
+    return (
+      <button type="button" className={`btn ${buttonTag}`} onClick={this.handleLikeClick.bind(this)}>
+        Likes {this.state.likes}
+      </button>
+    )
+  }
+}
 
 const Video = (props) => (
   <div className="card" style={{width: "18rem", float: "left", marginRight: "8px"}}>
@@ -220,6 +265,7 @@ const Video = (props) => (
       <h5 className="card-title">{props.video.title}</h5>
       <p className="card-text">Super dope video about the section</p>
       <a href="#" className="btn btn-primary">Go somewhere fun</a>
+      <VideoLikeButton likes={props.video.likes} />
     </div>
   </div>
 );
