@@ -38,19 +38,19 @@ class MyComponent extends React.Component {
               <th style={{ padding: 10 }}><h2>Something Random</h2></th>
             </tr>
             <tr>
-              <th style={{ padding: 10 }}>Link1</th>
-              <th style={{ padding: 10 }}>Link1</th>
-              <th style={{ padding: 10 }}>Link1</th>
+              <th style={{ padding: 10 }}><a href="contentpage.html">Link1</a></th>
+              <th style={{ padding: 10 }}><a href="contentpage.html">Link1</a></th>
+              <th style={{ padding: 10 }}><a href="contentpage.html">Link1</a></th>
             </tr>
             <tr>
-              <th style={{ padding: 10 }}>Link2</th>
-              <th style={{ padding: 10 }}>Link2</th>
-              <th style={{ padding: 10 }}>Link2</th>
+              <th style={{ padding: 10 }}><a href="contentpage.html">Link2</a></th>
+              <th style={{ padding: 10 }}><a href="contentpage.html">Link2</a></th>
+              <th style={{ padding: 10 }}><a href="contentpage.html">Link2</a></th>
             </tr>
             <tr>
-              <th style={{ padding: 10 }}>Link3</th>
-              <th style={{ padding: 10 }}>Link3</th>
-              <th style={{ padding: 10 }}>Link3</th>
+              <th style={{ padding: 10 }}><a href="contentpage.html">Link3</a></th>
+              <th style={{ padding: 10 }}><a href="contentpage.html">Link3</a></th>
+              <th style={{ padding: 10 }}><a href="contentpage.html">Link3</a></th>
             </tr>
           </table>
         </div>
