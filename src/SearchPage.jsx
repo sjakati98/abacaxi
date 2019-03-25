@@ -55,11 +55,34 @@ class MyComponent extends React.Component {
             </div>
           </form>
 
+        <div id='trending-bar'>
+          <table style={{ width: '100%'}}>
+            <tr>
+              <th style={{ padding: 10 }}><h2>What's New</h2></th>
+              <th style={{ padding: 10 }}><h2>What's Popular</h2></th>
+              <th style={{ padding: 10 }}><h2>Something Random</h2></th>
+            </tr>
+            <tr>
+              <th style={{ padding: 10 }}><a href="contentpage.html">Link1</a></th>
+              <th style={{ padding: 10 }}><a href="contentpage.html">Link1</a></th>
+              <th style={{ padding: 10 }}><a href="contentpage.html">Link1</a></th>
+            </tr>
+            <tr>
+              <th style={{ padding: 10 }}><a href="contentpage.html">Link2</a></th>
+              <th style={{ padding: 10 }}><a href="contentpage.html">Link2</a></th>
+              <th style={{ padding: 10 }}><a href="contentpage.html">Link2</a></th>
+            </tr>
+            <tr>
+              <th style={{ padding: 10 }}><a href="contentpage.html">Link3</a></th>
+              <th style={{ padding: 10 }}><a href="contentpage.html">Link3</a></th>
+              <th style={{ padding: 10 }}><a href="contentpage.html">Link3</a></th>
+            </tr>
+          </table>
+        </div>
       </div>
     );
   }
 }
-
 
 // This renders the JSX component inside the content node:
 ReactDOM.render(<MyComponent />, contentNode);
