@@ -14,21 +14,46 @@ class MyComponent extends React.Component {
   render() {
     return (
       <div>
-        
-        <div id='bigtitle' style={titlestyle}>
-          <h1>Abacaxi</h1>
+        <div id='bigtitle'>
+          <p id='appname'>Abacaxi</p>
+          <p id='appsubname'>The Spiky Fruit Of Knowledge</p>
         </div>
 
         <div id='logo'>
-          <center><img src='/img/pineapple-512.jpg'></img></center>
+          <center><img src='/img/cool-pineapple.png'></img></center>
         </div>
 
-        <div id='search-bar' style={searchbarstyle}>
-          <form name='search-form'>
-            <input type='text' name='search-text' style={searchtextstyle} placeholder='Enter a search term here'/>
-            <button id='search-btn'>Search</button>
+          <form id='searchform'>
+            <div className="form-row justify-content-md-center">
+              <div className="col-md-4">
+                <input type='text' className="form-control" placeholder='Enter a search term here'/>
+              </div>
+                <button id='search-btn' className="btn btn-success">Search</button>
+                <button type="button" className="btn btn-outline-dark" data-toggle="modal" data-target="#howItWorksModal" id="howItWorksBtn">?</button>
+
+                <div className="modal fade" id="howItWorksModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+                  <div className="modal-dialog" role="document">
+                    <div className="modal-content">
+                      <div className="modal-header">
+                        <h5 className="modal-title" id="exampleModalLongTitle">How Abacaxi Works</h5>
+                        <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div className="modal-body">
+                        <ul id='howItWorksList'>
+                          <li>Abacaxi works by taking your entered search term and attempting to match it to a content page stored in the database.</li>
+
+                          <li>Each content page is constructed from an existing Wiki Page's structure and populated with videos from the internet that Abacaxi's community feels best explains or describes the main topic and its subsequent subtopics or child topics.</li>
+
+                          <li>Users of Abacaxi can similarly submit their own suggestions and vote on such videos to provide their own input.</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+            </div>
           </form>
-        </div>
 
         <div id='trending-bar'>
           <table style={{ width: '100%'}}>
@@ -58,33 +83,6 @@ class MyComponent extends React.Component {
     );
   }
 }
-
-
-
-//Manual CSS Styles, need to change later
-//TODO: Use stylesheet or more elegant solution for css styling
-
-const titlestyle = {
-  'text-align': 'center'
-};
-
-const logostyle = {
-  'display': 'block',
-  'margin-left': 'auto',
-  'margin-right': 'auto',
-  'width': '25%',
-  'height': 'auto',
-  'border-radius': '20px'
-};
-
-const searchtextstyle = {
-  'width': '20%'
-}
-
-const searchbarstyle = {
-  'text-align': 'center'
-}
-
 
 // This renders the JSX component inside the content node:
 ReactDOM.render(<MyComponent />, contentNode);

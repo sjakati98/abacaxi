@@ -1,0 +1,29 @@
+#searchform{
+    margin-top: 1rem;
+}
+
+#bigtitle{
+    margin-top: 1rem;
+    text-align: center;
+    font-family: 'Finger Paint',cursive;
+}
+
+#logo{
+    margin: 0.5rem;
+}
+
+#appname{
+    font-size: 45px;
+}
+
+#appsubname{
+    font-size: 20px;
+}
+
+#howItWorksBtn{
+    margin-left: 0.5rem;
+}
+
+#howItWorksList{
+    text-align: justify;
+}
