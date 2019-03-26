@@ -132,9 +132,9 @@ let SearchForm = (props) => (
       <div className="col-md-4">
         <input type='text' className="form-control" placeholder='Enter a search term here'/>
       </div>
-        <button id='search-btn' className="btn btn-success">Search</button>
-        <button type="button" className="btn btn-outline-dark" data-toggle="modal" data-target="#howItWorksModal" id="howItWorksBtn">?</button>
-        <InfoModal />
+      <a href="/contentpage.html" id='search-btn' className="btn btn-success">Search</a>
+      <button type="button" className="btn btn-outline-dark" data-toggle="modal" data-target="#howItWorksModal" id="howItWorksBtn">?</button>
+      <InfoModal />
     </div>
   </form>
 );
