@@ -4,19 +4,22 @@ const exampleList = [
     id: 1,
     title: "test item 1",
     url: "contentpage.html",
-    description: "This is the first test item"
+    description: "This is the first test item",
+    imgUrl: "/img/cool-pineapple.png"
   },
   {
     id: 2,
     title: "test item 2",
     url: "contentpage.html",
-    description: "This is the second test item"
+    description: "This is the second test item",
+    imgUrl: "/img/cool-pineapple.png"
   },
   {
     id: 3,
     title: "test item 3",
     url: "contentpage.html",
-    description: "This is the third test item"
+    description: "This is the third test item",
+    imgUrl: "/img/cool-pineapple.png"
   }
 ];
 
@@ -41,7 +44,7 @@ class TrendingCard extends React.Component {
       <div className="col">
         <div className="card card-body">
           <div className="card" style={{width: "18rem"}}>
-            <img src='/img/cool-pineapple.png' className="card-img-top" alt="..."></img>
+            <img src={item.imgUrl} className="card-img-top" alt="..."></img>
             <div className="card-body">
               <h5 className="card-title">{item.title}</h5>
               <p class="card-text">{item.description}</p>
