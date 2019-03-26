@@ -4,19 +4,19 @@ const exampleList = [
     id: 1,
     title: "test item 1",
     url: "contentpage.html",
-    description: "This the first test item"
+    description: "This is the first test item"
   },
   {
     id: 2,
     title: "test item 2",
     url: "contentpage.html",
-    description: "This the second test item"
+    description: "This is the second test item"
   },
   {
     id: 3,
     title: "test item 3",
     url: "contentpage.html",
-    description: "This the third test item"
+    description: "This is the third test item"
   }
 ];
 
