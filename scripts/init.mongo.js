@@ -13,8 +13,8 @@ db.videos.insert([
         wikiPageId: 76894,
         sectionIdx: 3,
         created: new Date('2016-08-15'),
-        ytId: "BXpu6tbFCsI",
-        title: "Emu War - OverSimplified (Mini-Wars #4)",
+        ytId: 'Bxpu6tbFCsI',
+        title: 'Emu War - OverSimplified (Mini-Wars #4)',
         upvotes: 3,
         downvotes: 0
     },
@@ -22,8 +22,8 @@ db.videos.insert([
         wikiPageId: 76894,
         sectionIdx: 0,
         created: new Date('2016-08-15'),
-        ytId: "yb2Y2rcgnCw",
-        title: "Emus in the House | Kangaroo Dundee",
+        ytId: 'yb2Y2rcgnCw',
+        title: 'Emu in the House | Kangaroo Dundee',
         upvotes: 3,
         downvotes: 0
     },
@@ -31,12 +31,11 @@ db.videos.insert([
         wikiPageId: 76894,
         sectionIdx: 5,
         created: new Date('2016-08-15'),
-        ytId: "QOPZQHTNUs0",
-        title: "The Great Emu War",
+        ytId: 'QOPZQHTNUs0',
+        title: 'The Great Emu War',
         upvotes: 3,
         downvotes: 0
-    },
+    }
 ]);
 
-// Lastly, we create "indexes" to make searching faster
-db.videos.createIndex({ wikiPageId: 1 });
+db.videos.createIndex({ wikiPageId: 1});
