@@ -158,7 +158,7 @@ Upon failure:
 
 */
 
-app.post('/api/videos/update',(req,res) => {
+app.put('/api/videos',(req,res) => {
   let video = req.body.video;
   let field; //field to update
   if(video.upvote) { field = "upvotes"; } //if upvote is set to true, we will increment the upvotes field by 1 and vice versa for false
