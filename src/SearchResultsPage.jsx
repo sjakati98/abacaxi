@@ -5,7 +5,8 @@ function Result(props) {
   return (
     <div className="container" style={{paddingBottom: '8px', marginBottom: '12px', borderBottom: "1px solid grey"}}>
       <div className="row">
-        <Link to={`/wiki/${props.result.wikiPageId}`} className="col-12" ><h2>{props.result.title}</h2></Link>
+        <a href={`/wiki/${props.result.wikiPageId}`} className="col-12" ><h2>{props.result.title}</h2></a>
+        {/*<Link to={`/wiki/${props.result.wikiPageId}`} className="col-12" ><h2>{props.result.title}</h2></Link>*/}
         <p className="col-12">{props.result.desc}</p>
       </div>
     </div>
@@ -19,7 +20,8 @@ class SearchResultsPage extends React.Component {
       search: "Algebra", // this will be passed via the router in phase 3
       results: null
     };
-    this.gen_search_url = () => { return "https://en.wikipedia.org/w/api.php?action=opensearch&format=json&origin=*&search="+encodeURIComponent(this.state.search); };
+    this.wikiAPIBase = "https://en.wikipedia.org/w/api.php?format=json&origin=*";
+    this.gen_search_url = () => { return `${this.wikiAPIBase}&action=opensearch&search=${encodeURIComponent(this.state.search)}`; };
   }
 
   componentDidMount() {
