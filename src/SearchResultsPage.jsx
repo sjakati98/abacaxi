@@ -22,6 +22,7 @@ class SearchResultsPage extends React.Component {
     };
     this.wikiAPIBase = "https://en.wikipedia.org/w/api.php?format=json&origin=*";
     this.gen_search_url = () => { return `${this.wikiAPIBase}&action=opensearch&search=${encodeURIComponent(this.state.search)}`; };
+    this.gen_query_url = () => { return `${this.wikiAPIBase}&action=query&titles=${encodeURIComponent(this.state.search)}`; };
   }
 
   componentDidMount() {
@@ -31,17 +32,29 @@ class SearchResultsPage extends React.Component {
   loadData() {
     fetch(this.gen_search_url()).then(response => {
       if (response.ok) {
-        response.json().then(data => {
-          let results = []
-          for(let i=0; i < data[1].length; i++){
-            results.push({
-              title: data[1][i],
-              desc: data[2][i],
-              wikiLink: data[3][i],
-              wikiPageId: ""
+        response.json().then(parsedata => {
+          let results = [];
+          for(let i=0; i < parsedata[1].length; i++){
+            fetch(this.gen_query_url()).then(response => {
+              if (response.ok) {
+                response.json().then(querydata => {
+                  results.push({
+                    title: parsedata[1][i],
+                    desc: parsedata[2][i],
+                    wikiLink: parsedata[3][i],
+                    wikiPageId: Object.keys(querydata.query.pages)[0]
+                  });
+                  this.setState({ results: results });
+                });
+              } else {
+                response.json().then(error => {
+                  alert("Failed to fetch issues:" + error.message)
+                });
+              }
+            }).catch(err => {
+              alert("Error in fetching data from server:", err);
             });
           }
-          this.setState({ results: results });
         });
       } else {
         response.json().then(error => {
