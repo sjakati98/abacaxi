@@ -5,7 +5,7 @@ function Result(props) {
   return (
     <div className="container" style={{paddingBottom: '8px', marginBottom: '12px', borderBottom: "1px solid grey"}}>
       <div className="row">
-        <a href={props.result.link} className="col-12"><h2>{props.result.title}</h2></a>
+        <Link to={`/wiki/${props.result.wikiPageId}`} className="col-12" ><h2>{props.result.title}</h2></Link>
         <p className="col-12">{props.result.desc}</p>
       </div>
     </div>
@@ -16,9 +16,10 @@ class SearchResultsPage extends React.Component {
   constructor() {
     super();
     this.state = { 
-      search: encodeURIComponent("algebra"), // this will be passed via the router in phase 3
+      search: "Algebra", // this will be passed via the router in phase 3
       results: null
     };
+    this.gen_search_url = () => { return "https://en.wikipedia.org/w/api.php?action=opensearch&format=json&origin=*&search="+encodeURIComponent(this.state.search); };
   }
 
   componentDidMount() {
@@ -26,8 +27,7 @@ class SearchResultsPage extends React.Component {
   }
 
   loadData() {
-    let url = "https://en.wikipedia.org/w/api.php?action=opensearch&format=json&origin=*&search="+this.state.search;
-    fetch(url).then(response => {
+    fetch(this.gen_search_url()).then(response => {
       if (response.ok) {
         response.json().then(data => {
           let results = []
@@ -35,7 +35,8 @@ class SearchResultsPage extends React.Component {
             results.push({
               title: data[1][i],
               desc: data[2][i],
-              link: data[3][i]
+              wikiLink: data[3][i],
+              wikiPageId: ""
             });
           }
           this.setState({ results: results });
