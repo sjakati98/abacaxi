@@ -1,4 +1,4 @@
-# Abacaxi - The Spiky Fruit Of Knowledge
+# Abacaxi - *The Spiky Fruit Of Knowledge*
 
 ![Image Unavailable](https://juststickers.in/wp-content/uploads/2018/08/cool-pineapple.png)
 
