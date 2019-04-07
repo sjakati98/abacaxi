@@ -271,26 +271,68 @@ const Video = (props) => (
 );
 
 const AddVideoModal = (props) =>(
-  <div className="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-    <div className="modal-dialog modal-dialog-centered" role="document">
-      <div className="modal-content">
-        <div className="modal-header">
-          <h5 className="modal-title" id="exampleModalLongTitle">Modal title</h5>
-          <button type="button" className="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div className="modal-body">
-          blablablablablablablablabla
-        </div>
-        <div className="modal-footer">
-          <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="button" className="btn btn-primary">Save changes</button>
+  <div>
+    <button type="button" className="btn btn-primary" data-toggle="modal" data-target="#AddVideoModal">Add Video</button>
+
+    <div className="modal fade" id="AddVideoModal" tabindex="-1" role="dialog" aria-labelledby="AddVideoModalTitle" aria-hidden="true">
+      <div className="modal-dialog modal-dialog-centered" role="document">
+        <div className="modal-content">
+          <div className="modal-header">
+            <h5 className="modal-title" id="AddVideoModalTitle">Add Your Video</h5>
+            <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div className="modal-body">
+            <AddVideoForm parse={props.parse} />
+          </div>
+          <div className="modal-footer">
+            <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
         </div>
       </div>
     </div>
   </div>
 )
+
+class AddVideoForm extends React.Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      wikiID: props.parse.pageid,
+      sections: props.parse.sections,
+      selections : props.parse.sections.map(section => (
+        <Selection key={section.index} section={section} />
+      ))
+    }
+  }
+
+  render(){
+    return(
+      <div>
+        <form>
+          <div className="form-group">
+            <label for="videoID">Youtube Video ID</label>
+            <input type="text" className="form-control" id="videoID" placeholder="The 11 Digit code after watch?v="></input>
+          </div>
+          <div className="form-group">
+            <label for="wikiPageContentIndex">Choose The Content Section You Want To Submit</label>
+            <select class="form-control" id="wikiPageContentIndex">
+              {this.state.selections}
+            </select>
+          </div>
+          <button type="submit" className="btn btn-primary">Submit</button>
+        </form>
+      </div>
+    )
+  }
+}
+
+const Selection = (props) =>(
+  <option>{props.section.index}. {props.section.line}</option>
+)
+
+
 
 function Section(props) {
   const CustomHeader = `h${props.section.level}`;
@@ -322,7 +364,8 @@ function WikiPage(props) {
 class ContentPage extends React.Component {
   constructor() {
     super();
-    this.state = { sections: example_wikipedia_api_res.parse.sections };
+    this.state = { sections: example_wikipedia_api_res.parse.sections,
+      parse: example_wikipedia_api_res.parse};
   }
 
   render() {
@@ -330,9 +373,7 @@ class ContentPage extends React.Component {
       <div className="container">
         <h1>Content Page</h1>
         <hr />
-        <button type="button" className="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
-          Add Video
-        </button>
+        <AddVideoModal parse={this.state.parse} />
         <hr />
         <WikiPage sections={this.state.sections} />
       </div>
