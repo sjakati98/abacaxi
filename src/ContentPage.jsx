@@ -1,5 +1,5 @@
 // This is a place holder for the initial application state.
-const thumbnail_url = id => {return 'http://i3.ytimg.com/vi/'+id+'/maxresdefault.jpg'};
+const thumbnail_url = id => {return 'http://i3.ytimg.com/vi/'+id+'/hqdefault.jpg'};
 const video_url = id => {return 'https://youtube.com/watch?v='+id};
 
 
@@ -60,10 +60,102 @@ const Video = (props) => (
   </div>
 );
 
+const AddVideoModal = (props) =>(
+  <div>
+    <button type="button" className="btn btn-primary" data-toggle="modal" data-target="#AddVideoModal">Add Video</button>
+
+    <div className="modal fade" id="AddVideoModal" tabIndex="-1" role="dialog" aria-labelledby="AddVideoModalTitle" aria-hidden="true">
+      <div className="modal-dialog modal-dialog-centered" role="document">
+        <div className="modal-content">
+          <div className="modal-header">
+            <h5 className="modal-title" id="AddVideoModalTitle">Add Your Video</h5>
+            <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div className="modal-body">
+            <AddVideoForm wikiID={props.wikiID} sections={props.sections} />
+          </div>
+          <div className="modal-footer">
+            <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+)
+
+class AddVideoForm extends React.Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      wikiID: props.wikiID,
+      sections: props.sections,
+      selections : props.sections.map(section => (
+        <Selection key={section.index} section={section} />
+      ))
+    };
+    this.handleAddVidoe = this.handleAddVidoe.bind(this);
+  }
+
+  handleAddVidoe(e){
+    e.preventDefault();
+    let form = document.forms.videoAdd;
+    const submitReq = {
+      "video":{
+				"wikiPageId": this.state.wikiID,
+				"sectionIdx": form.wikiPageContentIndex.value,
+				"ytId": form.videoID.value
+			}
+    }
+    fetch('/api/videos', {
+      method: 'post',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(submitReq),
+    })
+    .then(res => res.json())
+    .then(json => {
+      console.log(json.success);
+      if (json.success) {
+        alert(json.msg);
+      }
+      else {
+        alert('Failed to add video.\n Error description: ' + json.msg);
+      }
+    });
+  }
+
+  render(){
+    return(
+      <div>
+        <form name="videoAdd" onSubmit={this.handleAddVidoe}>
+          <div className="form-group">
+            <label htmlFor="videoID">Youtube Video ID</label>
+            <input type="text" className="form-control" id="videoID" placeholder="The 11 Digit code after watch?v="></input>
+          </div>
+          <div className="form-group">
+            <label htmlFor="wikiPageContentIndex">Choose The Content Section You Want To Submit</label>
+            <select className="form-control" id="wikiPageContentIndex">
+              {this.state.selections}
+            </select>
+          </div>
+          <button type="submit" className="btn btn-primary">Submit</button>
+        </form>
+      </div>
+    )
+  }
+}
+
+const Selection = (props) =>(
+  <option value={props.section.index}>{props.section.index}. {props.section.line}</option>
+)
+
+
+
 function Section(props) {
   const CustomHeader = `h${props.section.level}`;
   const videos = props.videos.map(video => (
-    <Video key={video.id} video={video} />
+    <Video key={video.ytId} video={video} />
   ));
   return (
     <div className="container" style={{paddingBottom: '15px', marginBottom: '15px', borderBottom: "1px solid grey"}}>
@@ -90,6 +182,7 @@ function WikiPage(props) {
 class ContentPage extends React.Component {
   constructor() {
     super();
+
     const dummyWikiID = 162393; // this is going to change when we use routers
     
     this.loadWikiData = this.loadWikiData.bind(this);
@@ -150,9 +243,11 @@ class ContentPage extends React.Component {
   render() {
     let loadingHeader = <h1> Loading ... </h1>
     let wikiPresentation = (this.state.sections != null) ? <WikiPage sections={this.state.sections} videos={this.state.videos}/> : loadingHeader
+    let videoModal = (this.state.sections != null) ? <AddVideoModal sections={this.state.sections} wikiID={this.state.wikiID}/> : loadingHeader
 
     return (
       <div className="container">
+        {videoModal}
         {wikiPresentation}
       </div>
     );
