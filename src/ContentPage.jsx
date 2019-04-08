@@ -7,23 +7,6 @@ const state = {
 const thumbnail_url = id => {return 'http://i3.ytimg.com/vi/'+id+'/maxresdefault.jpg'};
 const video_url = id => {return 'https://youtube.com/watch?v='+id};
 
-let example_videos = [
-  {
-    "id": "BXpu6tbFCsI",
-    "title": "Emu War - OverSimplified (Mini-Wars #4)",
-    "likes": 3
-  },
-  {
-    "id": "yb2Y2rcgnCw",
-    "title": "Emus in the House | Kangaroo Dundee",
-    "likes": 2
-  },
-  {
-    "id": "QOPZQHTNUs0",
-    "title": "The Great Emu War",
-    "likes": 14
-  },
-]; // this is here because our database is not populated yet
 
 // This grabs the DOM element to be used to mount React components.
 var contentNode = document.getElementById("contents");
@@ -72,7 +55,7 @@ class VideoLikeButton extends React.Component {
 
 const Video = (props) => (
   <div className="card" style={{width: "18rem", float: "left", marginRight: "8px"}}>
-    <a href={video_url(props.video.id)}><img className="card-img-top" src={thumbnail_url(props.video.id)} alt="Card image cap"></img></a>
+    <a href={video_url(props.video.ytId)}><img className="card-img-top" src={thumbnail_url(props.video.ytId)} alt="Card image cap"></img></a>
     <div className="card-body">
       <h5 className="card-title">{props.video.title}</h5>
       <p className="card-text">Super dope video about the section</p>
@@ -112,10 +95,13 @@ function WikiPage(props) {
 class ContentPage extends React.Component {
   constructor() {
     super();
-    const dummyWikiID = 76894; // this is going to change when we use routers
+    const dummyWikiID = 162393; // this is going to change when we use routers
     
     this.loadWikiData = this.loadWikiData.bind(this);
     this.loadAbaxaciData = this.loadAbaxaciData.bind(this);
+
+
+    // TODO: need to add upvotes downvotes and add title to page from wiki API
 
     this.state = { 
       wikiID: dummyWikiID,
@@ -135,7 +121,13 @@ class ContentPage extends React.Component {
       .then(res => {
         if (res.ok) {
           res.json().then( json => {
-            this.setState({sections: json.parse.sections});
+            let newSections = json.parse.sections;
+            newSections.unshift({
+              "index": "0",
+              "line": json.parse.title,
+              "level": "1"
+            })
+            this.setState({sections: newSections});
           })
         }
       });
@@ -163,10 +155,9 @@ class ContentPage extends React.Component {
   render() {
     let loadingHeader = <h1> Loading ... </h1>
     let wikiPresentation = (this.state.sections != null) ? <WikiPage sections={this.state.sections} videos={this.state.videos}/> : loadingHeader
+
     return (
       <div className="container">
-        <h1>Content Page</h1>
-        <hr />
         {wikiPresentation}
       </div>
     );
