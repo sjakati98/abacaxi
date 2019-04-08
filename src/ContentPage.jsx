@@ -324,7 +324,15 @@ class AddVideoForm extends React.Component {
       body: JSON.stringify(submitReq),
     })
     .then(res => res.json())
-    .then(json => console.log(json));
+    .then(json => {
+      console.log(json.success);
+      if (json.success) {
+        alert(json.msg);
+      }
+      else {
+        alert('Failed to add video.\n Error description: ' + json.msg);
+      }
+    });
   }
 
   render(){
