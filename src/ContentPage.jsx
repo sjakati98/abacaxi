@@ -304,13 +304,33 @@ class AddVideoForm extends React.Component {
       selections : props.parse.sections.map(section => (
         <Selection key={section.index} section={section} />
       ))
+    };
+    this.handleAddVidoe = this.handleAddVidoe.bind(this);
+  }
+
+  handleAddVidoe(e){
+    e.preventDefault();
+    let form = document.forms.videoAdd;
+    const submitReq = {
+      "video":{
+				"wikiPageId": this.state.wikiID,
+				"sectionIdx": form.wikiPageContentIndex.value,
+				"ytId": form.videoID.value
+			}
     }
+    fetch('/api/videos', {
+      method: 'post',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(submitReq),
+    })
+    .then(res => res.json())
+    .then(json => console.log(json));
   }
 
   render(){
     return(
       <div>
-        <form>
+        <form name="videoAdd" onSubmit={this.handleAddVidoe}>
           <div className="form-group">
             <label for="videoID">Youtube Video ID</label>
             <input type="text" className="form-control" id="videoID" placeholder="The 11 Digit code after watch?v="></input>
@@ -329,7 +349,7 @@ class AddVideoForm extends React.Component {
 }
 
 const Selection = (props) =>(
-  <option>{props.section.index}. {props.section.line}</option>
+  <option value={props.section.index}>{props.section.index}. {props.section.line}</option>
 )
 
 
