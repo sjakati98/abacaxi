@@ -1,5 +1,5 @@
 // This is a place holder for the initial application state.
-const thumbnail_url = id => {return 'http://i3.ytimg.com/vi/'+id+'/maxresdefault.jpg'};
+const thumbnail_url = id => {return 'http://i3.ytimg.com/vi/'+id+'/hqdefault.jpg'};
 const video_url = id => {return 'https://youtube.com/watch?v='+id};
 
 
@@ -64,7 +64,7 @@ const AddVideoModal = (props) =>(
   <div>
     <button type="button" className="btn btn-primary" data-toggle="modal" data-target="#AddVideoModal">Add Video</button>
 
-    <div className="modal fade" id="AddVideoModal" tabindex="-1" role="dialog" aria-labelledby="AddVideoModalTitle" aria-hidden="true">
+    <div className="modal fade" id="AddVideoModal" tabIndex="-1" role="dialog" aria-labelledby="AddVideoModalTitle" aria-hidden="true">
       <div className="modal-dialog modal-dialog-centered" role="document">
         <div className="modal-content">
           <div className="modal-header">
@@ -130,11 +130,11 @@ class AddVideoForm extends React.Component {
       <div>
         <form name="videoAdd" onSubmit={this.handleAddVidoe}>
           <div className="form-group">
-            <label for="videoID">Youtube Video ID</label>
+            <label htmlFor="videoID">Youtube Video ID</label>
             <input type="text" className="form-control" id="videoID" placeholder="The 11 Digit code after watch?v="></input>
           </div>
           <div className="form-group">
-            <label for="wikiPageContentIndex">Choose The Content Section You Want To Submit</label>
+            <label htmlFor="wikiPageContentIndex">Choose The Content Section You Want To Submit</label>
             <select className="form-control" id="wikiPageContentIndex">
               {this.state.selections}
             </select>
@@ -155,7 +155,7 @@ const Selection = (props) =>(
 function Section(props) {
   const CustomHeader = `h${props.section.level}`;
   const videos = props.videos.map(video => (
-    <Video key={video.id} video={video} />
+    <Video key={video.ytId} video={video} />
   ));
   return (
     <div className="container" style={{paddingBottom: '15px', marginBottom: '15px', borderBottom: "1px solid grey"}}>
@@ -243,12 +243,12 @@ class ContentPage extends React.Component {
   render() {
     let loadingHeader = <h1> Loading ... </h1>
     let wikiPresentation = (this.state.sections != null) ? <WikiPage sections={this.state.sections} videos={this.state.videos}/> : loadingHeader
+    let videoModal = (this.state.sections != null) ? <AddVideoModal sections={this.state.sections} wikiID={this.state.wikiID}/> : loadingHeader
 
     return (
       <div className="container">
-        <AddVideoModal sections={this.state.sections} wikiID={this.state.wikiID}/>
+        {videoModal}
         {wikiPresentation}
-
       </div>
     );
   }

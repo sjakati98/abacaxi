@@ -4,6 +4,8 @@ const app = express();
 const bodyParser = require('body-parser');
 const fetch = require('node-fetch'); //fetch API module for node.js(apparently doesn't automatically support it?)
 const url = require('url'); //url module to construct URL using specified params
+const URLSearchParams = url.URLSearchParams;
+const URL = url.URL;
 
 app.use(express.static('static'));
 app.use(bodyParser.json());
