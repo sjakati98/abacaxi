@@ -345,7 +345,7 @@ class AddVideoForm extends React.Component {
           </div>
           <div className="form-group">
             <label for="wikiPageContentIndex">Choose The Content Section You Want To Submit</label>
-            <select class="form-control" id="wikiPageContentIndex">
+            <select className="form-control" id="wikiPageContentIndex">
               {this.state.selections}
             </select>
           </div>
