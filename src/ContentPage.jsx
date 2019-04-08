@@ -1,9 +1,4 @@
 // This is a place holder for the initial application state.
-const state = {
-  "wiki": "Emu",
-};
-
-
 const thumbnail_url = id => {return 'http://i3.ytimg.com/vi/'+id+'/maxresdefault.jpg'};
 const video_url = id => {return 'https://youtube.com/watch?v='+id};
 
