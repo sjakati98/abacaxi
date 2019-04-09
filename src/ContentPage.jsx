@@ -74,7 +74,7 @@ const AddVideoModal = (props) =>(
             </button>
           </div>
           <div className="modal-body">
-            <AddVideoForm wikiID={props.wikiID} sections={props.sections} />
+            <AddVideoForm wikiID={props.wikiID} sections={props.sections} addVideo={props.addVideo} />
           </div>
           <div className="modal-footer">
             <button type="button" className="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -118,6 +118,7 @@ class AddVideoForm extends React.Component {
       console.log(json.success);
       if (json.success) {
         alert(json.msg);
+        this.props.addVideo(json.video);
       }
       else {
         alert('Failed to add video.\n Error description: ' + json.msg);
@@ -183,10 +184,11 @@ class ContentPage extends React.Component {
   constructor() {
     super();
 
-    const dummyWikiID = 162393; // this is going to change when we use routers
+    const dummyWikiID = 1424309; // this is going to change when we use routers
     
     this.loadWikiData = this.loadWikiData.bind(this);
     this.loadAbaxaciData = this.loadAbaxaciData.bind(this);
+    this.addVideo = this.addVideo.bind(this);
 
 
     // TODO: need to add upvotes downvotes and add title to page from wiki API
@@ -239,11 +241,15 @@ class ContentPage extends React.Component {
         alert("There was a problemo: " + err.message)
       });
   }
+  addVideo(video){
+    this.state.videos.push(video);
+    this.setState({videos: this.state.videos});
+  }
 
   render() {
     let loadingHeader = <h1> Loading ... </h1>
     let wikiPresentation = (this.state.sections != null) ? <WikiPage sections={this.state.sections} videos={this.state.videos}/> : loadingHeader
-    let videoModal = (this.state.sections != null) ? <AddVideoModal sections={this.state.sections} wikiID={this.state.wikiID}/> : loadingHeader
+    let videoModal = (this.state.sections != null) ? <AddVideoModal sections={this.state.sections} wikiID={this.state.wikiID} addVideo={this.addVideo}/> : loadingHeader
 
     return (
       <div className="container">
