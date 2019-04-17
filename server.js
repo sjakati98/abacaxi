@@ -22,18 +22,7 @@ MongoClient.connect('mongodb://localhost', { useNewUrlParser: true }).then(conne
   console.log('ERROR:', error);
 });
 
-const ytApiParams = {
-  method: "GET",
-  headers: {
-            Accept: 'application/json'
-          },
-}; //constant parameters for the ytapi, including the method and what type of response we accept(see yt api docs)
-
-const ytApiKey = "AIzaSyCCnoDp8ullFubmLqfEJdbs5EmmQ37mu2s"; //hardcoded auth key for YT API I made
-
-const ytApiUrl = new URL("https://www.googleapis.com/youtube/v3/videos?"); //specific endpoint we need to hit for youtube video data
-
-
+//TODO: Require params for API for security
 /*
 Request Type: GET
 Endpoint: /api/videos/:id
@@ -58,51 +47,24 @@ Example Return:
     ],
     "count": 3
 */
-
+//TODO: GET should return top x number of videos with highest upvotes-downvotes number
 app.get('/api/videos/:id', (req,res) => {
   let wikiId = parseInt(req.params.id,10); //converting from string to number
   
-  db.collection('videos').find({wikiPageId: wikiId}).count().then(count => {
-    if(count == 0) {
-      res.json({
-        success: true,
-        msg: `No videos for wikiPage: ${wikiId} found!`, 
-        videos: [],
-        count: count
-      });
-
-    }
+  db.collection('videos').find({wikiPageId: wikiId}).count()
+  .then(count => {
+    if(count == 0)  res.json(constructResponse(true,`No videos for wikiPage: ${wikiId} found!`, {videos: [], count:count})); 
     else {
-      db.collection('videos').find({wikiPageId: wikiId}).toArray().then(pageVideos => {
+      db.collection('videos').find({wikiPageId: wikiId}).toArray()
+      .then(pageVideos => {
         let reconstructedVideos = [];
-        pageVideos.forEach(video => {
-          reconstructedVideos.push({
-            wikiPageId: video.wikiPageId,
-            sectionIdx: video.sectionIdx,
-            ytId: video.ytId, //Update REST API Spec Document
-            title: video.title,
-            upvotes: video.upvotes,
-            downvotes: video.downvotes
-          })
-        });
-        res.json({
-          success: true,
-          msg: `Successfully found list of videos for Wiki Page with id:${wikiId}`,
-          videos: reconstructedVideos, 
-          count: count,
-        });
+        pageVideos.forEach(video => reconstructedVideos.push(reconstructVideo(video)));
+        res.json(constructResponse(true,`Successfully found list of videos for Wiki Page with id: ${wikiId}`, {videos: reconstructedVideos, count: count}));
       });
     }
-  
-  }
-  ).catch(error => {
-    console.log(error);
-    res.json({
-      success: false,
-      msg: `Error in parsing GET request to /api/videos/${wikiId}: ${error}`,
-      videos: [],
-      count: -1
-    });
+  }).catch(error => {
+    console.log(`Error in parsing GET request to /api/videos/${wikiId}: ${error}`);
+    res.json(constructResponse(false, `There was an error with retrieving the videos for this page. Sorry!`, {videos: [], count: -1}));
   }); 
 });
 
@@ -144,63 +106,48 @@ Upon failure:
     video: {}
 }
 */
-
 app.post('/api/videos', (req,res) => {
   let newVideo = req.body.video;
 
   //first we search the database to see if the video object already exists
   db.collection('videos').find({wikiPageId: newVideo.wikiPageId, sectionIdx: newVideo.sectionIdx, ytId: newVideo.ytId}).count().then(count => {
-    if(count != 0){ //if it already exists, we don't add it
-      res.json({
-        success: false, //if we don't add it, we set the response body success property to false
-        msg: "Video already exists in the system!",
-        video: {}
-      })
-    }
-    else{ //If it isn't already in the database, we add it
-     
-      ytUrl = buildUrl(newVideo.ytId); //building the api endpoint we need to GET from using query parameters
 
-      fetch(ytUrl,ytApiParams).then(data => {return data.json()}).then(response => { //querying the Youtube API
-        let title = response.items[0].snippet.title; //title from the Youtube video API
-        newVideo.title = title;
-        newVideo.created = new Date(); //adding and initializing parameters
-        newVideo.upvotes = 0;
-        newVideo.downvotes = 0;
+    //if it already exists, we don't add it
+    if(count != 0) res.json(constructResponse(false, "This video for this specific page, topic and subsection already exists!", {video:{}}));
 
-        db.collection('videos').insertOne(newVideo).then(result => //Adding it to our collection
-          db.collection('videos').find({_id: result.insertedId}).limit(1).next() //finding it again to return it as part of the JSON
-        ).then(newVideo => {
-          res.json({
-            success: true, //if we do add it, we set the response body success property to true
-            msg: `Video '${newVideo.title}' successfully submitted!`,
-            video: {
-              wikiPageId: newVideo.wikiPageId,
-              sectionIdx: newVideo.sectionIdx,
-              ytId: newVideo.ytId, //constructs simplified video object to be returned to client with only necessary information,
-              title: newVideo.title,
-              upvotes: newVideo.upvotes,
-              downvotes: newVideo.downvotes
-            }
-          }
-          );
-        }).catch(error => {
-          console.log(error);
-          res.json({
-            success:false,
-            msg:`Error in parsing POST request to /api/videos/ with video youtube id ${newVideo.ytId} and wikipage id ${newVideo.wikiPageId}: ${error}`,
-            video: {}
-          });
-        });
+    //If it isn't already in the database, then we add it
+    else{
+      ytUrl = buildUrl(newVideo.ytId); //building the api endpoint we need to GET from using query parameters 
+
+      //querying the Youtube API
+      fetch(ytUrl,ytApiParams).then(data => {return data.json()}).then(response => {
+        //If the youtube ID they submit is invalid
+        if(response.pageInfo.totalResults == 0|| response.pageInfo.resultsPerPage == 0) res.json(constructResponse(false, `The video ID you submitted is not a valid ID. Please re-check this information!`, { video:{} }));
+    
+        //If the ID is actually valid
+        else{
+          let title = response.items[0].snippet.title; //title from the Youtube video API //TODO: Don't make this hardcoded
+          newVideo.title = title;
+          newVideo.created = new Date(); //adding and initializing parameters
+          newVideo.upvotes = 0;
+          newVideo.downvotes = 0;
+
+          db.collection('videos').insertOne(newVideo) //Adding it to our collection
+          .then(result => db.collection('videos').find({_id: result.insertedId}).limit(1).next()) //finding it again to return it as part of the JSON
+          .then(newVideo =>  res.json(constructResponse(true, `Video '${newVideo.title}' successfully submitted!`, {video: reconstructVideo(newVideo)})))
+          .catch(error => {
+                console.log(`Error in adding/retrieving video with ID: ${newVideo.ytId} and wikipage ID: ${newVideo.wikiPageId}: ${error}`);
+                res.json(constructResponse(false, `There was an error inserting/retrieving the video you submitted from the database!`, {video: {}}));
+            });
+        }
       }).catch(error => {
         console.log(error);
-        res.json({
-          success:false,
-          msg:`Error in parsing POST request to /api/videos/ with video youtube id ${newVideo.ytId} and wikipage id ${newVideo.wikiPageId}: ${error}`,
-          video: {}
-        });
+        res.json(constructResponse(false, `There was an error fetching the title for the video you submitted from youtube!`, {video: {}}));
       })
     }
+  }).catch(error => {
+    console.log(error);
+    res.json(constructResponse(false, `There was an error querying the database to validate your submission! Sorry!`, {video: {}}));
   });
 });
 
@@ -255,41 +202,25 @@ app.put('/api/videos',(req,res) => {
   db.collection('videos').updateOne(
     {wikiPageId: video.wikiPageId, sectionIdx: video.sectionIdx, ytId: video.ytId}, //finding the video
     { $inc: {[field]: 1}} //incrementing the field
-  ).then(result => {
-    if(result.matchedCount === 0 || result.modifiedCount === 0) { //if no video object matches what we are trying to update, we just set success to false and return that
-      res.json({
-        success: false,
-        msg: "Video does not exist in the system!",
-        video: {}
-      });
-    }
+  )
+  .then(result => {
+    //if no video object matches what we are trying to update
+    if(result.matchedCount === 0 || result.modifiedCount === 0) res.json(constructResponse(false, "Error: This video does not exist in the system!", { video:{} }));
+    
     else{ //if we do find it
       db.collection('videos').find({wikiPageId: video.wikiPageId, sectionIdx: video.sectionIdx, ytId: video.ytId}).limit(1).next() //finding the updated video again
       .then(updatedVideo => {
-        res.json({
-          success: true, //true because we could update it
-          msg: "Video successfully upvoted/downvoted!",
-          video: {
-            wikiPageId: updatedVideo.wikiPageId,
-            sectionIdx: updatedVideo.sectionIdx,
-            ytId: updatedVideo.ytId, //reconstructing it to send using response body,
-            title: updatedVideo.title,
-            upvotes: updatedVideo.upvotes,
-            downvotes: updatedVideo.downvotes
-          }
-        });
+        res.json(constructResponse(true, "Video successfully upvoted/downvoted!", {video: reconstructVideo(updatedVideo)}));
       })
     }
   }).catch(error => {
-    console.log(error);
-    res.json({
-      success:false,
-      msg: `Error in parsing PUT request to /api/videos/update with video youtube id ${video.ytId} and wikipage id ${video.wikiPageId}: ${error}`,
-      video: {}
-    });
+    console.log(`Error in parsing PUT request to /api/videos/update with video youtube id ${video.ytId} and wikipage id ${video.wikiPageId}: ${error}`);
+    res.json(constructResponse(false, `There was an error updating the video upvote/downvote count! Sorry!`, {video: {}}));
   });
 });
 
+
+// Helpers/Constants
 
 const buildUrl =  (id) => {
   let ytApiSearchParams = new URLSearchParams(ytApiUrl.search);
@@ -298,3 +229,37 @@ const buildUrl =  (id) => {
   ytApiSearchParams.append("id",id);          //Example: https://www.googleapis.com/youtube/v3/videos?part=snippet&id=3MtrUf81k6c&key=AIzaSyCCnoDp8ullFubmLqfEJdbs5EmmQ37mu2s
   return ytApiUrl + ytApiSearchParams.toString();
 }; //Using the URL module 
+
+const reconstructVideo = (dbVideo) => {
+  let reconstructedVideo = {
+    wikiPageId: dbVideo.wikiPageId,
+    sectionIdx: dbVideo.sectionIdx,
+    ytId: dbVideo.ytId, //reconstructing it to send using response body,
+    title: dbVideo.title,
+    upvotes: dbVideo.upvotes,
+    downvotes: dbVideo.downvotes
+  };
+  return reconstructedVideo;
+};
+
+const constructResponse = (success, message, optionals) => {
+  let responseObject = {
+    success: success,
+    msg: message
+  };
+  Object.keys(optionals).forEach(key => {
+    responseObject[key] = optionals[key];
+  })
+  return responseObject;
+};
+
+const ytApiParams = {
+  method: "GET",
+  headers: {
+            Accept: 'application/json'
+          },
+}; //constant parameters for the ytapi, including the method and what type of response we accept(see yt api docs)
+
+const ytApiKey = "AIzaSyCCnoDp8ullFubmLqfEJdbs5EmmQ37mu2s"; //hardcoded auth key for YT API I made
+
+const ytApiUrl = new URL("https://www.googleapis.com/youtube/v3/videos?"); //specific endpoint we need to hit for youtube video data
