@@ -1,28 +1,28 @@
-// This grabs the DOM element to be used to mount React components.
-var contentNode = document.getElementById("contents");
+import React from 'react';
+import { Link } from 'react-router';
+
 
 function Result(props) {
   return (
     <div className="container" style={{paddingBottom: '8px', marginBottom: '12px', borderBottom: "1px solid grey"}}>
       <div className="row">
-        <a href={`/wiki/${props.result.wikiPageId}`} className="col-12" ><h2>{props.result.title}</h2></a>
-        {/*<Link to={`/wiki/${props.result.wikiPageId}`} className="col-12" ><h2>{props.result.title}</h2></Link>*/}
+        <Link to={`/wiki/${props.result.wikiPageId}`} className="col-12" ><h2>{props.result.title}</h2></Link>
         <p className="col-12">{props.result.desc}</p>
       </div>
     </div>
   );
 }
 
-class SearchResultsPage extends React.Component {
-  constructor() {
-    super();
-    this.state = { 
-      search: "Algebra", // this will be passed via the router in phase 3
+export default class SearchResultsPage extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      search: decodeURIComponent(this.props.params.query),
       results: null
     };
     this.wikiAPIBase = "https://en.wikipedia.org/w/api.php?format=json&origin=*";
     this.gen_search_url = () => { return `${this.wikiAPIBase}&action=opensearch&search=${encodeURIComponent(this.state.search)}`; };
-    this.gen_query_url = () => { return `${this.wikiAPIBase}&action=query&titles=${encodeURIComponent(this.state.search)}`; };
+    this.gen_query_url = (title) => { return `${this.wikiAPIBase}&action=query&redirects=1&titles=${title}`; };
   }
 
   componentDidMount() {
@@ -35,7 +35,7 @@ class SearchResultsPage extends React.Component {
         response.json().then(parsedata => {
           let results = [];
           for(let i=0; i < parsedata[1].length; i++){
-            fetch(this.gen_query_url()).then(response => {
+            fetch(this.gen_query_url(parsedata[1][i])).then(response => {
               if (response.ok) {
                 response.json().then(querydata => {
                   results.push({
@@ -87,5 +87,6 @@ class SearchResultsPage extends React.Component {
   }
 }
 
-// This renders the JSX component inside the content node:
-ReactDOM.render(<SearchResultsPage />, contentNode);
+SearchResultsPage.propTypes = {
+  params: React.PropTypes.object.isRequired,
+};
