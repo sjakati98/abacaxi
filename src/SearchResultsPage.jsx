@@ -20,6 +20,9 @@ export default class SearchResultsPage extends React.Component {
       search: decodeURIComponent(this.props.params.query),
       results: null
     };
+
+    // build api urls for search and query wiki api endpoints
+    // - query endpoint allows us to get wiki page id from the page title
     this.wikiAPIBase = "https://en.wikipedia.org/w/api.php?format=json&origin=*";
     this.gen_search_url = () => { return `${this.wikiAPIBase}&action=opensearch&search=${encodeURIComponent(this.state.search)}`; };
     this.gen_query_url = (title) => { return `${this.wikiAPIBase}&action=query&redirects=1&titles=${title}`; };
@@ -33,16 +36,19 @@ export default class SearchResultsPage extends React.Component {
     fetch(this.gen_search_url()).then(response => {
       if (response.ok) {
         response.json().then(parsedata => {
-          if (parsedata[1].length == 0){ // handle no search results found
+          // handle no search results found
+          if (parsedata[1].length == 0){
             this.setState({ results: [] });
             return;
           } 
 
+          // get wiki page id for each search result
           let results = [];
           for(let i=0; i < parsedata[1].length; i++){
             fetch(this.gen_query_url(parsedata[1][i])).then(response => {
               if (response.ok) {
                 response.json().then(querydata => {
+                  // add result and update state
                   results.push({
                     title: parsedata[1][i],
                     desc: parsedata[2][i],
