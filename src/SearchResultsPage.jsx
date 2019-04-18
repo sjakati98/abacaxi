@@ -33,6 +33,11 @@ export default class SearchResultsPage extends React.Component {
     fetch(this.gen_search_url()).then(response => {
       if (response.ok) {
         response.json().then(parsedata => {
+          if (parsedata[1].length == 0){ // handle no search results found
+            this.setState({ results: [] });
+            return;
+          } 
+
           let results = [];
           for(let i=0; i < parsedata[1].length; i++){
             fetch(this.gen_query_url(parsedata[1][i])).then(response => {
