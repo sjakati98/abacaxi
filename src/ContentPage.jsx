@@ -6,47 +6,6 @@ const video_url = id => {return 'https://youtube.com/watch?v='+id};
 // This grabs the DOM element to be used to mount React components.
 var contentNode = document.getElementById("contents");
 
-class VideoLikeButton extends React.Component {
-  constructor(props){
-    super(props);
-    this.state = {
-      likes: props.likes, // when using the database this needs to be changed because we're only using a derived state here
-      // so when using a database, there should be no need to set an initial state; this is just for PoC
-      clickedFlag: false,
-    }
-  }
-
-  handleLikeClick(){
-    if (this.state.clickedFlag){
-      this.setState(function(prevState, _) {
-        return {
-          likes: prevState.likes - 1,
-          clickedFlag: !prevState.clickedFlag
-        };
-      })
-    }
-    else{
-      this.setState(function(prevState, _) {
-        return {
-          likes: prevState.likes + 1,
-          clickedFlag: !prevState.clickedFlag
-        };
-      })
-    }
-    
-  }
-
-  render(){
-
-    let buttonTag = (this.state.clickedFlag) ? "btn-success" : "btn-light"
-
-    return (
-      <button type="button" className={`btn ${buttonTag}`} onClick={this.handleLikeClick.bind(this)}>
-        Likes {this.state.likes}
-      </button>
-    )
-  }
-}
 
 const Video = (props) => (
   <div className="card" style={{width: "18rem", float: "left", marginRight: "8px"}}>
