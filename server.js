@@ -1,16 +1,15 @@
 const express = require('express');
-
-const app = express();
+const MongoClient = require('mongodb').MongoClient;
 const bodyParser = require('body-parser');
 const fetch = require('node-fetch'); //fetch API module for node.js(apparently doesn't automatically support it?)
 const url = require('url'); //url module to construct URL using specified params
 const URLSearchParams = url.URLSearchParams;
 const URL = url.URL;
 
+const app = express();
+
 app.use(express.static('static'));
 app.use(bodyParser.json());
-
-const MongoClient = require('mongodb').MongoClient;
 
 let db;
 MongoClient.connect('mongodb://localhost', { useNewUrlParser: true }).then(connection => {
@@ -23,31 +22,9 @@ MongoClient.connect('mongodb://localhost', { useNewUrlParser: true }).then(conne
 });
 
 //TODO: Require params for API for security
-/*
-Request Type: GET
-Endpoint: /api/videos/:id
-Params: Wikipedia page id
-Returns: list of videos
-
-Example Endpoint: /api/videos/76894
-Example Return:
-		{
-    "success": true,
-    "msg": "Successfully found list of videos for Wiki Page with id: 76894"
-    "videos": [
-        {
-            "wikiPageId": 76894,
-            "sectionIdx": 3,
-            "ytId": "Bxpu6tbFCsI",
-            "title": "Emu War - OverSimplified (Mini-Wars #4)",
-            "upvotes": 3,
-            "downvotes": 0
-        },
-        ...
-    ],
-    "count": 3
-*/
 //TODO: GET should return top x number of videos with highest upvotes-downvotes number
+
+//GET VIDEOS ENDPOINT
 app.get('/api/videos/:id', (req,res) => {
   let wikiId = parseInt(req.params.id,10); //converting from string to number
   
@@ -68,44 +45,7 @@ app.get('/api/videos/:id', (req,res) => {
   }); 
 });
 
-
-/*
-Request Type: POST
-Endpoint: /api/videos
-Params: video object
-If no video object present with same values, create new video document and return it with new properties upvote and downvote, and success = true
-Else, return success = false
-Returns: id of updated document
-Request Body Ex:
-		{
-			"video":{
-				"wikiPageId": 76895,
-				"sectionIdx": 7,
-				"ytId": "abcd"
-			}
-}
-Response Body Ex:
-Upon success:
-{
-    "success": true,
-    "msg": "Video "5 must have skills to become a programmer (that you didn't know)" successfully submitted!",
-    "video": {
-        "wikiPageId": 76895,
-        "sectionIdx": 7,
-        "ytId": "3MtrUf81k6c",
-        "title": "5 must have skills to become a programmer (that you didn't know)",
-        "upvotes": 0,
-        "downvotes": 0
-    }
-}
-			
-Upon failure:
-{
-    "success": false,
-    "msg": "Video already exists in the system!",
-    video: {}
-}
-*/
+//CREATE VIDEO ENDPOINT
 app.post('/api/videos', (req,res) => {
   let newVideo = req.body.video;
 
@@ -114,18 +54,14 @@ app.post('/api/videos', (req,res) => {
 
     //if it already exists, we don't add it
     if(count != 0) res.json(constructResponse(false, "This video for this specific page, topic and subsection already exists!", {video:{}}));
-
-    //If it isn't already in the database, then we add it
-    else{
+    else {
       ytUrl = buildUrl(newVideo.ytId); //building the api endpoint we need to GET from using query parameters 
 
       //querying the Youtube API
       fetch(ytUrl,ytApiParams).then(data => {return data.json()}).then(response => {
         //If the youtube ID they submit is invalid
         if(response.pageInfo.totalResults == 0|| response.pageInfo.resultsPerPage == 0) res.json(constructResponse(false, `The video ID you submitted is not a valid ID. Please re-check this information!`, { video:{} }));
-    
-        //If the ID is actually valid
-        else{
+        else {
           let title = response.items[0].snippet.title; //title from the Youtube video API //TODO: Don't make this hardcoded
           newVideo.title = title;
           newVideo.created = new Date(); //adding and initializing parameters
@@ -151,57 +87,35 @@ app.post('/api/videos', (req,res) => {
   });
 });
 
-/*
-
-Request Type: PUT 
-Endpoint: /api/videos/
-Params: video object with specified properties wikiPageId, sectionIdx, ytId and new property upvote(boolean, true for upvote, false for downvote), specifying upvote or downvote
-Returns: exact same object upon success
-Actual increment of upvote is client-side, but refreshing the page should show no change after upvoting
-Example:
-Request example:
-{
-	"video":{
-		"wikiPageId": 7689,
-		"sectionIdx": 7,
-		"ytId": "3MtrUf81k6c",
-		"upvote": true
-}
-}
-Response example:
-{
-    "success": true,
-    "msg": "Video successfully upvoted/downvoted!"
-    "video": {
-        "wikiPageId": 76895,
-        "sectionIdx": 7,
-        "ytId": "3MtrUf81k6c",
-        "title": "5 must have skills to become a programmer (that you didn't know)",
-        "upvotes": 6,
-        "downvotes": 1
-    }
-}
-
-previously, upvotes was 5. Downvotes would be 2 and upvotes would be 5 if upvote in request body was set to false.
-
-Upon failure:
-{
-    "success": false,
-    "msg": "Video does not exist in the system!",
-    "video": {}
-}
-
-*/
-
+//UPDATE VIDEO WITH DOWNVOTE/UPVOTE ENDPOINT
 app.put('/api/videos',(req,res) => {
   let video = req.body.video;
   let field; //field to update
-  if(video.upvote) { field = "upvotes"; } //if upvote is set to true, we will increment the upvotes field by 1 and vice versa for false
-  else { field = "downvotes"; }
+  let operation; //which operation, upvote or downvote to perform
+  let value;
+
+  let hasUpvote = video.hasOwnProperty("upvote");
+  let hasDownvote = video.hasOwnProperty("downvote");
+
+  if((hasUpvote && hasDownvote) || (!hasUpvote && !hasDownvote)){
+    res.json(constructResponse(false, "Error: Request body is either missing property upvote/downvote or has both")); //enforcing property constraints
+    return;
+  }
+  if(hasUpvote) {
+    field = "upvotes"; //check the object for the property, use it to decide the action
+    operation = "upvote";
+  }
+  else if(hasDownvote){ 
+    field = "downvotes";
+    operation = "downvote";
+  }
+
+  if(video[operation]) value = 1; //if the field is true, we increment, else decrement
+  else value = -1;
 
   db.collection('videos').updateOne(
     {wikiPageId: video.wikiPageId, sectionIdx: video.sectionIdx, ytId: video.ytId}, //finding the video
-    { $inc: {[field]: 1}} //incrementing the field
+    { $inc: {[field]: value}} //updating the field with the appropriate action
   )
   .then(result => {
     //if no video object matches what we are trying to update
