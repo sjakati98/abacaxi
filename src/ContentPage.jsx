@@ -15,7 +15,7 @@ class VideoReactionButtons extends React.Component{
     this.state = {
       upvotes: props.upvotes,
       downvotes: props.downvotes,
-      click: 0,
+      click: false,
       upvoteButtonActive: false,
       downvoteButtonActive: false,
       videoInfo: props.videoInfo
@@ -31,134 +31,62 @@ class VideoReactionButtons extends React.Component{
       "video": {
         "wikiPageId": this.state.videoInfo.wikiPageId,
         "sectionIdx": this.state.videoInfo.sectionIdx,
-        "ytId": this.state.videoInfo.ytId
+        "ytId": this.state.videoInfo.ytId,
+        "upvote": true
       }
     }
-
-    // if already upvoted
-    if (this.state.click == 1){
-      updateRequest.upvote = false
+    if (!this.state.click){
       fetch('/api/videos', {
         method: 'put',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updateRequest),
-      }).then( res => res.json() )
-      .then( json => {
-        if (json.success) {
-          this.setState((prevState, props) => (
-            {
-              upvotes: prevState.upvotes - 1,
-              upvoteButtonActive: false,
-              click: 0
-            }
-          ));
+      })
+      .then(res => res.json())
+      .then(json => {
+        if (json.success){
+          this.setState(prevState => ({
+            click: true,
+            upvoteButtonActive: true,
+            upvotes: prevState.upvotes + 1
+          }));
+          console.log("yes")
+        }
+        else{
+          alert(json.msg)
         }
       })
-    }
-    // if downvoted
-    if (this.state.click == -1){
-      updateRequest.upvote = true
-      updateRequest.downvote = false
-      fetch('/api/videos', {
-        method: 'put',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updateRequest),
-      }).then( res => res.json() )
-      .then( json => {
-        if (json.success) {
-          this.setState(prevState => ({
-            upvotes: prevState.upvotes + 1,
-            downvotes: prevState.downvotes - 1,
-            upvoteButtonActive: true,
-            click: 1
-          }));
-        }
-       })
-    }
-    else{
-      updateRequest.upvote = true
-      fetch('/api/videos', {
-        method: 'put',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updateRequest),
-      }).then( res => res.json() )
-      .then( json => {
-        if (json.success) {
-          this.setState(prevState => ({
-            upvotes: prevState.upvotes + 1,
-            upvoteButtonActive: true,
-            click: 1
-          }));
-        }
-       })
-
+      console.log(this.state)
     }
   }
   handleDownvote(e){
     // handle SyntheticEvent
     e.preventDefault();
-
+    
     let updateRequest = {
       "video": {
         "wikiPageId": this.state.videoInfo.wikiPageId,
         "sectionIdx": this.state.videoInfo.sectionIdx,
-        "ytId": this.state.videoInfo.ytId
+        "ytId": this.state.videoInfo.ytId,
+        "downvote": true
       }
     }
-
-    // if already downvoted
-    if (this.state.click == -1){
-      updateRequest.downvote = false
+    if (!this.state.click){
       fetch('/api/videos', {
         method: 'put',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updateRequest),
-      }).then( res => res.json() )
-      .then( json => {
-        if (json.success) {
+      })
+      .then(res => res.json())
+      .then(json => {
+        if (json.success){
           this.setState(prevState => ({
-            downvotes: prevState.downvotes - 1,
-            downvoteButtonActive: false,
-            click: 0
+            click: true,
+            downvoteButtonActive: true,
+            downvotes: prevState.downvotes + 1
           }));
         }
       })
-    }
-    if (this.state.click == 1){
-      updateRequest.downvote = true
-      updateRequest.upvote = false
-      fetch('/api/videos', {
-        method: 'put',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updateRequest),
-      }).then( res => res.json() )
-      .then( json => {
-        if (json.success) {
-          this.setState(prevState => ({
-            downvotes: prevState.downvotes + 1,
-            upvotes: prevState.upvotes - 1,
-            downvoteButtonActive: true,
-            click: -1
-          }));
-        }
-      });
-    }
-    else{
-      updateRequest.downvote = true
-      fetch('/api/videos', {
-        method: 'put',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updateRequest),
-      }).then( res => res.json() )
-      .then( json => {
-        if (json.success) {
-          this.setState(prevState => ({
-            downvotes: prevState.downvotes + 1,
-            downvoteButtonActive: true,
-            click: -1
-          }));
-        }
-      })
+      console.log(this.state)
     }
   }
  
