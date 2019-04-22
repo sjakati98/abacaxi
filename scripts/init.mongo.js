@@ -21,3 +21,5 @@ db.videos.insert([
 ]);
 
 db.videos.createIndex({ wikiPageId: 1});
+
+//TODO: Example Page Initialization Script
