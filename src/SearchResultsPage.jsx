@@ -43,6 +43,7 @@ export default class SearchResultsPage extends React.Component {
           // handle no search results found
           if (parsedata[1].length == 0) {
             this.setState({ results: [] });
+            document.getElementById("navbarSearchFields").removeAttribute('disabled');
             return;
           }
 
