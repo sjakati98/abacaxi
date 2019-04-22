@@ -7,6 +7,176 @@ const video_url = id => {return 'https://youtube.com/watch?v='+id};
 var contentNode = document.getElementById("contents");
 
 
+
+class VideoReactionButtons extends React.Component{
+  constructor(props){
+    super(props);
+    console.log(props)
+    this.state = {
+      upvotes: props.upvotes,
+      downvotes: props.downvotes,
+      click: 0,
+      upvoteButtonActive: false,
+      downvoteButtonActive: false,
+      videoInfo: props.videoInfo
+    }
+    this.handleDownvote = this.handleDownvote.bind(this);
+    this.handleUpvote = this.handleUpvote.bind(this);
+  }
+  handleUpvote(e){
+    //handle SyntheticEvent
+    e.preventDefault();
+
+    let updateRequest = {
+      "video": {
+        "wikiPageId": this.state.videoInfo.wikiPageId,
+        "sectionIdx": this.state.videoInfo.sectionIdx,
+        "ytId": this.state.videoInfo.ytId
+      }
+    }
+
+    // if already upvoted
+    if (this.state.click == 1){
+      updateRequest.upvote = false
+      fetch('/api/videos', {
+        method: 'put',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updateRequest),
+      }).then( res => res.json() )
+      .then( json => {
+        if (json.success) {
+          this.setState((prevState, props) => (
+            {
+              upvotes: prevState.upvotes - 1,
+              upvoteButtonActive: false,
+              click: 0
+            }
+          ));
+        }
+      })
+    }
+    // if downvoted
+    if (this.state.click == -1){
+      updateRequest.upvote = true
+      updateRequest.downvote = false
+      fetch('/api/videos', {
+        method: 'put',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updateRequest),
+      }).then( res => res.json() )
+      .then( json => {
+        if (json.success) {
+          this.setState(prevState => ({
+            upvotes: prevState.upvotes + 1,
+            downvotes: prevState.downvotes - 1,
+            upvoteButtonActive: true,
+            click: 1
+          }));
+        }
+       })
+    }
+    else{
+      updateRequest.upvote = true
+      fetch('/api/videos', {
+        method: 'put',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updateRequest),
+      }).then( res => res.json() )
+      .then( json => {
+        if (json.success) {
+          this.setState(prevState => ({
+            upvotes: prevState.upvotes + 1,
+            upvoteButtonActive: true,
+            click: 1
+          }));
+        }
+       })
+
+    }
+  }
+  handleDownvote(e){
+    // handle SyntheticEvent
+    e.preventDefault();
+
+    let updateRequest = {
+      "video": {
+        "wikiPageId": this.state.videoInfo.wikiPageId,
+        "sectionIdx": this.state.videoInfo.sectionIdx,
+        "ytId": this.state.videoInfo.ytId
+      }
+    }
+
+    // if already downvoted
+    if (this.state.click == -1){
+      updateRequest.downvote = false
+      fetch('/api/videos', {
+        method: 'put',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updateRequest),
+      }).then( res => res.json() )
+      .then( json => {
+        if (json.success) {
+          this.setState(prevState => ({
+            downvotes: prevState.downvotes - 1,
+            downvoteButtonActive: false,
+            click: 0
+          }));
+        }
+      })
+    }
+    if (this.state.click == 1){
+      updateRequest.downvote = true
+      updateRequest.upvote = false
+      fetch('/api/videos', {
+        method: 'put',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updateRequest),
+      }).then( res => res.json() )
+      .then( json => {
+        if (json.success) {
+          this.setState(prevState => ({
+            downvotes: prevState.downvotes + 1,
+            upvotes: prevState.upvotes - 1,
+            downvoteButtonActive: true,
+            click: -1
+          }));
+        }
+      });
+    }
+    else{
+      updateRequest.downvote = true
+      fetch('/api/videos', {
+        method: 'put',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updateRequest),
+      }).then( res => res.json() )
+      .then( json => {
+        if (json.success) {
+          this.setState(prevState => ({
+            downvotes: prevState.downvotes + 1,
+            downvoteButtonActive: true,
+            click: -1
+          }));
+        }
+      })
+    }
+  }
+ 
+  render(){
+
+    console.log(this.state);
+
+    return(
+      <div className="row">
+          <button onClick={this.handleUpvote}>Upvote {this.state.upvotes}</button>
+          <button onClick={this.handleDownvote}>Downvote {this.state.downvotes}</button>
+      </div>
+    )
+  }
+}  
+
+
+
 const Video = (props) => (
   <div className="card" style={{width: "18rem", float: "left", marginRight: "8px"}}>
     <a href={video_url(props.video.ytId)}><img className="card-img-top" src={thumbnail_url(props.video.ytId)} alt="Card image cap"></img></a>
@@ -14,7 +184,7 @@ const Video = (props) => (
       <h5 className="card-title">{props.video.title}</h5>
       <p className="card-text">Super dope video about the section</p>
       <a href="#" className="btn btn-primary">Go somewhere fun</a>
-      <VideoLikeButton likes={props.video.likes} />
+      <VideoReactionButtons upvotes={props.video.upvotes} downvotes={props.video.downvotes} videoInfo={props.video}/>
     </div>
   </div>
 );

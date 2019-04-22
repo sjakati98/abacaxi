@@ -25,7 +25,8 @@
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-react": "^6.24.1",
     "eslint": "^5.9.0",
-    "nodemon": "^1.18.10"
+    "nodemon": "^1.18.10",
+    "require": "^2.4.20"
   },
   "repository": {
     "type": "git",

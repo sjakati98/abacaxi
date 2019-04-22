@@ -1,6 +1,6 @@
-import { PassThrough } from "stream";
+import React from 'react';
 
-class VideoReactionButtons extends React.Component {
+export default class VideoReactionButtons extends React.Component{
     constructor(props){
       super(props);
       this.state = {
@@ -70,8 +70,9 @@ class VideoReactionButtons extends React.Component {
         })
     }
     render(){
-        
-
-      
+        <div className="row">
+            <button onClick={this.handleUpvote}>Upvote</button>
+            <button onClick={this.handleDownvote}>Downvote</button>
+        </div>
     }
 }  
