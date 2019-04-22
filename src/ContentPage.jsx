@@ -1,12 +1,13 @@
 import React from 'react';
+import Navbar from './components/Navbar.jsx';
 
 // This is a place holder for the initial application state.
-const thumbnail_url = id => {return 'http://i3.ytimg.com/vi/'+id+'/hqdefault.jpg'};
-const video_url = id => {return 'https://youtube.com/watch?v='+id};
+const thumbnail_url = id => { return 'http://i3.ytimg.com/vi/' + id + '/hqdefault.jpg' };
+const video_url = id => { return 'https://youtube.com/watch?v=' + id };
 
 
 class VideoLikeButton extends React.Component {
-  constructor(props){
+  constructor(props) {
     super(props);
     this.state = {
       likes: props.likes, // when using the database this needs to be changed because we're only using a derived state here
@@ -15,27 +16,27 @@ class VideoLikeButton extends React.Component {
     }
   }
 
-  handleLikeClick(){
-    if (this.state.clickedFlag){
-      this.setState(function(prevState, _) {
+  handleLikeClick() {
+    if (this.state.clickedFlag) {
+      this.setState(function (prevState, _) {
         return {
           likes: prevState.likes - 1,
           clickedFlag: !prevState.clickedFlag
         };
       })
     }
-    else{
-      this.setState(function(prevState, _) {
+    else {
+      this.setState(function (prevState, _) {
         return {
           likes: prevState.likes + 1,
           clickedFlag: !prevState.clickedFlag
         };
       })
     }
-    
+
   }
 
-  render(){
+  render() {
 
     let buttonTag = (this.state.clickedFlag) ? "btn-success" : "btn-light"
 
@@ -48,7 +49,7 @@ class VideoLikeButton extends React.Component {
 }
 
 const Video = (props) => (
-  <div className="card" style={{width: "18rem", float: "left", marginRight: "8px"}}>
+  <div className="card" style={{ width: "18rem", float: "left", marginRight: "8px" }}>
     <a href={video_url(props.video.ytId)}><img className="card-img-top" src={thumbnail_url(props.video.ytId)} alt="Card image cap"></img></a>
     <div className="card-body">
       <h5 className="card-title">{props.video.title}</h5>
@@ -59,7 +60,7 @@ const Video = (props) => (
   </div>
 );
 
-const AddVideoModal = (props) =>(
+const AddVideoModal = (props) => (
   <div>
     <button type="button" className="btn btn-primary" data-toggle="modal" data-target="#AddVideoModal">Add Video</button>
 
@@ -85,48 +86,48 @@ const AddVideoModal = (props) =>(
 )
 
 class AddVideoForm extends React.Component {
-  constructor(props){
+  constructor(props) {
     super(props);
     this.state = {
       wikiID: props.wikiID,
       sections: props.sections,
-      selections : props.sections.map(section => (
+      selections: props.sections.map(section => (
         <Selection key={section.index} section={section} />
       ))
     };
     this.handleAddVidoe = this.handleAddVidoe.bind(this);
   }
 
-  handleAddVidoe(e){
+  handleAddVidoe(e) {
     e.preventDefault();
     let form = document.forms.videoAdd;
     const submitReq = {
-      "video":{
-				"wikiPageId": this.state.wikiID,
-				"sectionIdx": form.wikiPageContentIndex.value,
-				"ytId": form.videoID.value
-			}
+      "video": {
+        "wikiPageId": this.state.wikiID,
+        "sectionIdx": form.wikiPageContentIndex.value,
+        "ytId": form.videoID.value
+      }
     }
     fetch('/api/videos', {
       method: 'post',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(submitReq),
     })
-    .then(res => res.json())
-    .then(json => {
-      console.log(json.success);
-      if (json.success) {
-        alert(json.msg);
-        this.props.addVideo(json.video);
-      }
-      else {
-        alert('Failed to add video.\n Error description: ' + json.msg);
-      }
-    });
+      .then(res => res.json())
+      .then(json => {
+        console.log(json.success);
+        if (json.success) {
+          alert(json.msg);
+          this.props.addVideo(json.video);
+        }
+        else {
+          alert('Failed to add video.\n Error description: ' + json.msg);
+        }
+      });
   }
 
-  render(){
-    return(
+  render() {
+    return (
       <div>
         <form name="videoAdd" onSubmit={this.handleAddVidoe}>
           <div className="form-group">
@@ -146,7 +147,7 @@ class AddVideoForm extends React.Component {
   }
 }
 
-const Selection = (props) =>(
+const Selection = (props) => (
   <option value={props.section.index}>{props.section.index}. {props.section.line}</option>
 )
 
@@ -158,11 +159,11 @@ function Section(props) {
     <Video key={video.ytId} video={video} />
   ));
   return (
-    <div className="container" style={{paddingBottom: '15px', marginBottom: '15px', borderBottom: "1px solid grey"}}>
+    <div className="container" style={{ paddingBottom: '15px', marginBottom: '15px', borderBottom: "1px solid grey" }}>
       <div className="row">
         <CustomHeader>{props.section.line}</CustomHeader>
-        <hr/>
-        <div className="col-12" style={{"overflowX": "auto"}}>
+        <hr />
+        <div className="col-12" style={{ "overflowX": "auto" }}>
           {videos}
         </div>
       </div>
@@ -172,7 +173,7 @@ function Section(props) {
 
 function WikiPage(props) {
   const sections = props.sections.map(section => (
-    <Section key={section.index} section={section} videos={props.videos.filter(videoObject => videoObject.sectionIdx == section.index)}/>
+    <Section key={section.index} section={section} videos={props.videos.filter(videoObject => videoObject.sectionIdx == section.index)} />
   ));
   return (
     <div>{sections}</div>
@@ -184,7 +185,7 @@ export default class ContentPage extends React.Component {
     super(props);
     // TODO: need to add upvotes downvotes and add title to page from wiki API
 
-    this.state = { 
+    this.state = {
       wikiID: this.props.params.wikiPageId,
       videos: [],
     };
@@ -192,64 +193,74 @@ export default class ContentPage extends React.Component {
     this.loadWikiData = this.loadWikiData.bind(this);
     this.loadAbaxaciData = this.loadAbaxaciData.bind(this);
     this.addVideo = this.addVideo.bind(this);
+    this.handleNavbarSearch = this.handleNavbarSearch.bind(this);
   }
 
-  componentDidMount(){
+  componentDidMount() {
     this.loadWikiData();
     this.loadAbaxaciData();
   }
 
-  loadWikiData(){
+  loadWikiData() {
     let wikiID = this.state.wikiID;
     let wikiLink = `https://en.wikipedia.org/w/api.php?origin=*&action=parse&format=json&pageid=${wikiID}&prop=sections`
     fetch(wikiLink)
       .then(res => {
         if (res.ok) {
-          res.json().then( json => {
+          res.json().then(json => {
             let newSections = json.parse.sections;
             newSections.unshift({
               "index": "0",
               "line": json.parse.title,
               "level": "1"
             })
-            this.setState({sections: newSections});
+            this.setState({ sections: newSections });
           })
         }
       });
   }
- loadAbaxaciData(){
+  loadAbaxaciData() {
     let wikiID = this.state.wikiID;
     fetch("api/videos/" + wikiID.toString())
-      .then( res => {
+      .then(res => {
         if (res.ok) {
-          res.json().then( json => {
+          res.json().then(json => {
             let videos = [];
             json.videos.forEach(video => {
               videos.push(
                 video
               )
             });
-            this.setState({videos: videos})
+            this.setState({ videos: videos })
           })
         }
-      }).catch( err => {
+      }).catch(err => {
         alert("There was a problemo: " + err.message)
       });
   }
-  addVideo(video){
+  addVideo(video) {
     this.state.videos.push(video);
-    this.setState({videos: this.state.videos});
+    this.setState({ videos: this.state.videos });
+  }
+
+  handleNavbarSearch(e) {
+    e.preventDefault();
+    let form = document.forms.navbarSearchForm;
+    this.props.router.push({ pathname: '/search/' + encodeURIComponent(form.searchQuery.value) });
   }
 
   render() {
     let loadingHeader = <h1> Loading ... </h1>
-    let wikiPresentation = (this.state.sections != null) ? <WikiPage sections={this.state.sections} videos={this.state.videos}/> : loadingHeader
-    let videoModal = (this.state.sections != null) ? <AddVideoModal sections={this.state.sections} wikiID={this.state.wikiID} addVideo={this.addVideo}/> : loadingHeader
+    let wikiPresentation = (this.state.sections != null) ? <WikiPage sections={this.state.sections} videos={this.state.videos} /> : loadingHeader
+    let videoModal = (this.state.sections != null) ? <AddVideoModal sections={this.state.sections} wikiID={this.state.wikiID} addVideo={this.addVideo} /> : loadingHeader
 
     return (
-      <div className="container">
-        {videoModal}
-        {wikiPresentation}
+      <div>
+        <Navbar handleNavbarSearch={this.handleNavbarSearch} />
+        <div className="container page-contents">
+          {videoModal}
+          {wikiPresentation}
+        </div>
       </div>
     );
   }

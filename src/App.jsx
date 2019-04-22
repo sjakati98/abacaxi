@@ -39,8 +39,8 @@ const RoutedApp = () => (
     {/* <Redirect from="/" to="/issues" /> - replaced this with the Dashboard component */}
     <Route path="/" component={App} >
       <IndexRoute component={withRouter(SearchPage)} />
-      <Route path="/search/:query" component={SearchResultsPage} />
-      <Route path="/wiki/:wikiPageId" component={ContentPage} />
+      <Route path="/search/:query" component={withRouter(SearchResultsPage)} />
+      <Route path="/wiki/:wikiPageId" component={withRouter(ContentPage)} />
       <Route path="*" component={NoMatch} />
     </Route>
   </Router>);
