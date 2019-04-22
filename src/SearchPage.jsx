@@ -1,3 +1,5 @@
+import React from 'react';
+
 // This is a place holder for the initial application state.
 const exampleList = [
   {
@@ -23,9 +25,6 @@ const exampleList = [
   }
 ];
 
-// This grabs the DOM element to be used to mount React components.
-var contentNode = document.getElementById("contents");
-
 class TrendingItem extends React.Component {
   render() {
     const item = this.props.item;
@@ -47,7 +46,7 @@ class TrendingCard extends React.Component {
             <img src={item.imgUrl} className="card-img-top" alt="..."></img>
             <div className="card-body">
               <h5 className="card-title">{item.title}</h5>
-              <p class="card-text">{item.description}</p>
+              <p className="card-text">{item.description}</p>
               <a href={item.url} className="btn btn-primary">Go to the page</a>
             </div>
           </div>
@@ -102,7 +101,7 @@ class TrendingCardProt extends React.Component {
 
 let InfoModal = (props) => (
 
-  <div className="modal fade" id="howItWorksModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+  <div className="modal fade" id="howItWorksModal" tabIndex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
     <div className="modal-dialog" role="document">
       <div className="modal-content">
         <div className="modal-header">
@@ -127,17 +126,17 @@ let InfoModal = (props) => (
 );
 
 let SearchForm = (props) => (
-  <form id='searchform'>
-    <div className="form-row justify-content-md-center">
-      <div className="col-md-4">
-        <input type='text' className="form-control" placeholder='Enter a search term here'/>
-      </div>
-      <a href="/contentpage.html" id='search-btn' className="btn btn-success">Search</a>
-      <button type="button" className="btn btn-outline-dark" data-toggle="modal" data-target="#howItWorksModal" id="howItWorksBtn">?</button>
-      <InfoModal />
-    </div>
-  </form>
-);
+      <form id='searchform' onSubmit={props.handleSearch}>
+        <div className="form-row justify-content-md-center">
+          <div className="col-md-4">
+            <input type='text' id='searchQuery' className="form-control" placeholder='Enter a search term here'/>
+          </div>
+          <button type="submit" id='search-btn' className="btn btn-success">Search</button>
+          <button type="button" className="btn btn-outline-dark" data-toggle="modal" data-target="#howItWorksModal" id="howItWorksBtn">?</button>
+          <InfoModal />
+        </div>
+      </form>
+    );
 
 let TitleLogo = (props) => (
   <div>
@@ -151,17 +150,24 @@ let TitleLogo = (props) => (
   </div>
 );
 
-class SearchPage extends React.Component {
-  constructor() {
-    super();
+export default class SearchPage extends React.Component {
+  constructor(props) {
+    super(props);
     this.state = {exampleList: exampleList};
+    this.handleSearch = this.handleSearch.bind(this);
+  }
+
+  handleSearch(e){
+    e.preventDefault();
+    let form = document.forms.searchform;
+    this.props.router.push({ pathname: '/search/'+encodeURIComponent(form.searchQuery.value)});
   }
 
   render() {
     return (
       <div>
           <TitleLogo />
-          <SearchForm />
+          <SearchForm handleSearch={this.handleSearch}/>
           <TrendingTableProt exampleList={this.state.exampleList} />
           <hr />
           <TrendingCardProt exampleList={this.state.exampleList} />
@@ -169,6 +175,3 @@ class SearchPage extends React.Component {
     );
   }
 }
-
-// This renders the JSX component inside the content node:
-ReactDOM.render(<SearchPage />, contentNode);
