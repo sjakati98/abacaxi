@@ -1,3 +1,5 @@
+import React from 'react';
+
 // This is a place holder for the initial application state.
 const thumbnail_url = id => {return 'http://i3.ytimg.com/vi/'+id+'/hqdefault.jpg'};
 const video_url = id => {return 'https://youtube.com/watch?v='+id};
@@ -7,8 +9,8 @@ const video_url = id => {return 'https://youtube.com/watch?v='+id};
 var contentNode = document.getElementById("contents");
 
 
-
 class VideoReactionButtons extends React.Component{
+
   constructor(props){
     super(props);
     console.log(props)
@@ -237,26 +239,22 @@ function WikiPage(props) {
   );
 }
 
-class ContentPage extends React.Component {
-  constructor() {
-    super();
-
-    const dummyWikiID = 1424309; // this is going to change when we use routers
-    
-    this.loadWikiData = this.loadWikiData.bind(this);
-    this.loadAbaxaciData = this.loadAbaxaciData.bind(this);
-    this.addVideo = this.addVideo.bind(this);
-
-
+export default class ContentPage extends React.Component {
+  constructor(props) {
+    super(props);
     // TODO: need to add upvotes downvotes and add title to page from wiki API
 
     this.state = { 
-      wikiID: dummyWikiID,
+      wikiID: this.props.params.wikiPageId,
       videos: [],
     };
+
+    this.loadWikiData = this.loadWikiData.bind(this);
+    this.loadAbaxaciData = this.loadAbaxaciData.bind(this);
+    this.addVideo = this.addVideo.bind(this);
   }
 
-  componentWillMount(){
+  componentDidMount(){
     this.loadWikiData();
     this.loadAbaxaciData();
   }
@@ -317,5 +315,7 @@ class ContentPage extends React.Component {
   }
 }
 
-// This renders the JSX component inside the content node:
-ReactDOM.render(<ContentPage />, contentNode);
+ContentPage.propTypes = {
+  params: React.PropTypes.object.isRequired,
+};
+
