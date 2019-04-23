@@ -25,29 +25,20 @@ const exampleList = [
   }
 ];
 
-class TrendingItem extends React.Component {
-  render() {
-    const item = this.props.item;
-    return (
-      <tr>
-        <th style={{ padding: 10 }}><a href={item.url}>{item.title}</a></th>
-      </tr>
-    );
-  }
-}
-
 class TrendingCard extends React.Component {
   render() {
     const item = this.props.item;
+    const yturl = 'https://youtube.com/watch?v=' + item.ytId;
+    const ytimg = 'http://i3.ytimg.com/vi/' + item.ytId + '/hqdefault.jpg';
     return (
       <div className="col">
         <div className="card card-body">
           <div className="card" style={{width: "18rem"}}>
-            <img src={item.imgUrl} className="card-img-top" alt="..."></img>
+            <img src={ytimg} className="card-img-top" alt="..."></img>
             <div className="card-body">
               <h5 className="card-title">{item.title}</h5>
-              <p className="card-text">{item.description}</p>
-              <a href={item.url} className="btn btn-primary">Go to the page</a>
+              <p className="card-text">Very Popular with {item.upvotes} likes!</p>
+              <a href={yturl} className="btn btn-primary">Go to the Youtube page</a>
             </div>
           </div>
         </div>
@@ -56,27 +47,23 @@ class TrendingCard extends React.Component {
   }
 }
 
-class TrendingTableProt extends React.Component {
-  render() {
-    const trendingItems = this.props.exampleList.map(item => (
-      <TrendingItem key={item.id} item={item} />
-    ));
-    return (
-      <table style={{ width: '100%'}}>
-        <thread>
-          <tr>
-          <th style={{ padding: 10 }}><h2>What's Popular</h2></th>
-          </tr>
-        </thread>
-        <tbody>{trendingItems}</tbody>
-      </table>
-    );
-  }
-}
-
 class TrendingCardProt extends React.Component {
   render() {
-    const trendingCards = this.props.exampleList.map(item => (
+    let trendingData = [];
+    fetch('/api/trending', {
+      method: 'get'
+    })
+      .then(res => res.json())
+      .then(json => {
+        console.log(json.success);
+        if (json.success) {
+          trendingData = json.videos;
+        }
+        else {
+          alert('Failed to get trending videos.\n Error description: ' + json.msg);
+        }
+      });
+    const trendingCards = trendingData.map(item => (
       <TrendingCard key={item.id} item={item} />
     ));
     return (
@@ -168,7 +155,6 @@ export default class SearchPage extends React.Component {
       <div>
           <TitleLogo />
           <SearchForm handleSearch={this.handleSearch}/>
-          <TrendingTableProt exampleList={this.state.exampleList} />
           <hr />
           <TrendingCardProt exampleList={this.state.exampleList} />
       </div>
