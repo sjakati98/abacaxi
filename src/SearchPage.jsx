@@ -1,32 +1,6 @@
 import React from 'react';
 
 // This is a place holder for the initial application state.
-const exampleList = [
-  {
-    "wikiPageId": 76894,
-    "sectionIdx": 3,
-    "ytId": "KFRhYuB93qk",
-    "title": "FFXIV Kafka's Theme",
-    "upvotes": 3,
-    "downvotes": 0
-  },
-  {
-    "wikiPageId": 76894,
-    "sectionIdx": 3,
-    "ytId": "u20Py_d2aI8",
-    "title": "FFXIV Suzaku's Theme",
-    "upvotes": 3,
-    "downvotes": 0
-  },
-  {
-    "wikiPageId": 76894,
-    "sectionIdx": 3,
-    "ytId": "Bxpu6tbFCsI",
-    "title": "Emu War - OverSimplified",
-    "upvotes": 3,
-    "downvotes": 0
-  }
-];
 
 class TrendingCard extends React.Component {
   render() {
@@ -52,22 +26,8 @@ class TrendingCard extends React.Component {
 
 class TrendingCardProt extends React.Component {
   render() {
-    let trendingData = this.props.exampleList;
-    fetch('/api/trending', {
-      method: 'get'
-    })
-      .then(res => res.json())
-      .then(json => {
-        console.log(json.success);
-        if (json.success) {
-          trendingData = json.videos;
-        }
-        else {
-          alert('Failed to get trending videos.\n Error description: ' + json.msg);
-        }
-      });
-    const trendingCards = trendingData.map(item => (
-      <TrendingCard key={item.id} item={item} />
+    const trendingCards = this.props.trendingData.map(item => (
+      <TrendingCard key={item.ytId} item={item} />
     ));
     return (
       <div className="row">
@@ -143,8 +103,31 @@ let TitleLogo = (props) => (
 export default class SearchPage extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {exampleList: exampleList};
+    this.state = {};
     this.handleSearch = this.handleSearch.bind(this);
+    this.loadRendingData = this.loadRendingData.bind(this);
+  }
+
+  componentDidMount() {
+    this.loadRendingData();
+    console.log("component mounted");
+    console.log(this.state.trendingData);
+  }
+
+  loadRendingData() {
+    fetch('/api/trending', {
+      method: 'get'
+    })
+      .then(res => res.json())
+      .then(json => {
+        if (json.success) {
+          this.setState({ trendingData: json.videos });
+          console.log("Data should be saved");
+        }
+        else {
+          alert('Failed to get trending videos.\n Error description: ' + json.msg);
+        }
+      });
   }
 
   handleSearch(e){
@@ -154,12 +137,14 @@ export default class SearchPage extends React.Component {
   }
 
   render() {
+    let loadingTrending = <h1>......Loading......</h1>
+    let trendingBar = (this.state.trendingData != null) ? <TrendingCardProt trendingData={this.state.trendingData} /> : loadingTrending
     return (
       <div>
           <TitleLogo />
           <SearchForm handleSearch={this.handleSearch}/>
           <hr />
-          <TrendingCardProt exampleList={this.state.exampleList} />
+          {trendingBar}
       </div>
     );
   }
