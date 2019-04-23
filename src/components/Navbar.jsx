@@ -1,6 +1,6 @@
 import React from 'react';
-import { Link } from 'react-router';
-
+import ReactDOM from 'react-dom';
+import { Router, Route, hashHistory, withRouter, IndexRoute, Link } from 'react-router';
 
 export default class Navbar extends React.Component {
     constructor(props) {

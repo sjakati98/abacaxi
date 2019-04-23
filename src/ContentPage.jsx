@@ -1,4 +1,5 @@
 import React from 'react';
+import {Navbar} from './components/Navbar.jsx'
 
 // This is a place holder for the initial application state.
 const thumbnail_url = id => {return 'http://i3.ytimg.com/vi/'+id+'/hqdefault.jpg'};
@@ -252,6 +253,8 @@ export default class ContentPage extends React.Component {
     this.loadWikiData = this.loadWikiData.bind(this);
     this.loadAbaxaciData = this.loadAbaxaciData.bind(this);
     this.addVideo = this.addVideo.bind(this);
+    this.handleNavbarSearch = this.handleNavbarSearch.bind(this);
+  
   }
 
   componentDidMount(){
@@ -301,6 +304,13 @@ export default class ContentPage extends React.Component {
     this.setState({videos: this.state.videos});
   }
 
+  handleNavbarSearch(e) {
+    e.preventDefault();
+    let form = document.forms.navbarSearchForm;
+    this.props.router.push({ pathname: '/search/' + encodeURIComponent(form.searchQuery.value) });
+    this.setState({videos: this.state.videos});
+  }
+
   render() {
     let loadingHeader = <h1> Loading ... </h1>
     let wikiPresentation = (this.state.sections != null) ? <WikiPage sections={this.state.sections} videos={this.state.videos}/> : loadingHeader
@@ -308,8 +318,11 @@ export default class ContentPage extends React.Component {
 
     return (
       <div className="container">
-        {videoModal}
-        {wikiPresentation}
+        <Navbar handleNavbarSearch={this.handleNavbarSearch} />
+        <div className="container page-contents">
+          {videoModal}
+          {wikiPresentation}
+        </div>
       </div>
     );
   }
