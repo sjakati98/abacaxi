@@ -22,7 +22,6 @@ MongoClient.connect('mongodb://localhost', { useNewUrlParser: true }).then(conne
 });
 
 //TODO: Require params for API for security
-//TODO: GET should return top x number of videos with highest upvotes-downvotes number
 
 //GET VIDEOS ENDPOINT
 app.get('/api/videos/:id', (req,res) => {
@@ -90,6 +89,7 @@ app.post('/api/videos', (req,res) => {
           newVideo.created = new Date(); //adding and initializing parameters
           newVideo.upvotes = 0;
           newVideo.downvotes = 0;
+          newVideo.sectionIdx = parseInt(newVideo.sectionIdx,10);
 
           db.collection('videos').insertOne(newVideo) //Adding it to our collection
           .then(result => db.collection('videos').find({_id: result.insertedId}).limit(1).next()) //finding it again to return it as part of the JSON
@@ -232,6 +232,6 @@ const ytApiKey = "AIzaSyCCnoDp8ullFubmLqfEJdbs5EmmQ37mu2s"; //hardcoded auth key
 
 const ytApiUrl = new URL("https://www.googleapis.com/youtube/v3/videos?"); //specific endpoint we need to hit for youtube video data
 
-//TODO-LIST:
+//To-Do List:
 //TODO: Standardize error messages(There was.., Error:.., Error in..)
 //TODO: Clean-up error catching
