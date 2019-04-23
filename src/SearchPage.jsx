@@ -126,7 +126,7 @@ let InfoModal = (props) => (
 );
 
 let SearchForm = (props) => (
-      <form id='searchform' onSubmit={props.handleSearch}>
+      <form id='searchForm' onSubmit={props.handleSearch}>
         <div className="form-row justify-content-md-center">
           <div className="col-md-4">
             <input type='text' id='searchQuery' className="form-control" placeholder='Enter a search term here'/>
@@ -159,7 +159,7 @@ export default class SearchPage extends React.Component {
 
   handleSearch(e){
     e.preventDefault();
-    let form = document.forms.searchform;
+    let form = document.forms.searchForm;
     this.props.router.push({ pathname: '/search/'+encodeURIComponent(form.searchQuery.value)});
   }
 

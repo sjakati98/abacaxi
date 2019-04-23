@@ -32,6 +32,7 @@
     "react": "^15.3.1",
     "react-dom": "^15.3.1",
     "react-router": "^2.7.0",
+    "require": "^2.4.20",
     "webpack": "^3.8.1"
   },
   "repository": {
