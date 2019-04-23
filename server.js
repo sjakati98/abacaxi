@@ -22,7 +22,6 @@ MongoClient.connect('mongodb://localhost', { useNewUrlParser: true }).then(conne
 });
 
 //TODO: Require params for API for security
-//TODO: GET should return top x number of videos with highest upvotes-downvotes number
 
 //GET VIDEOS ENDPOINT
 app.get('/api/videos/:id', (req,res) => {
@@ -30,19 +29,42 @@ app.get('/api/videos/:id', (req,res) => {
   
   db.collection('videos').find({wikiPageId: wikiId}).count()
   .then(count => {
-    if(count == 0)  res.json(constructResponse(true,`No videos for wikiPage: ${wikiId} found!`, {videos: [], count:count})); 
+    if(count == 0) res.json(constructResponse(true,`No videos for wikiPage: ${wikiId} found!`, {videos: [], count:count})); 
     else {
       db.collection('videos').find({wikiPageId: wikiId}).toArray()
       .then(pageVideos => {
         let reconstructedVideos = [];
         pageVideos.forEach(video => reconstructedVideos.push(reconstructVideo(video)));
-        res.json(constructResponse(true,`Successfully found list of videos for Wiki Page with id: ${wikiId}`, {videos: reconstructedVideos, count: count}));
+        let sortedAndFilteredVideos = sortVideos(reconstructedVideos,true);
+        res.json(constructResponse(true,`Successfully found list of videos for Wiki Page with id: ${wikiId}`, {videos: sortedAndFilteredVideos, count: sortedAndFilteredVideos.length}));
       });
     }
   }).catch(error => {
     console.log(`Error in parsing GET request to /api/videos/${wikiId}: ${error}`);
     res.json(constructResponse(false, `There was an error with retrieving the videos for this page. Sorry!`, {videos: [], count: -1}));
   }); 
+});
+
+//GET TRENDING VIDEOS ENDPOINT
+
+app.get('/api/trending', (req,res) => {
+  db.collection('videos').find().count()
+  .then(count =>{
+    if(count == 0) {
+      res.json(constructResponse(true,`There are no trending videos!`, {videos: [], count:count}));
+      return;
+    }
+    db.collection('videos').find().toArray()
+    .then(allVideos => {
+      let reconstructedVideos = [];
+      allVideos.forEach(video => reconstructedVideos.push(reconstructVideo(video)));
+      let sortedVideos = sortVideos(reconstructedVideos,false);
+      res.json(constructResponse(true,`Successfully found top 3 trending videos!`, {videos: sortedVideos, count: sortedVideos.length}));
+    })
+  }).catch(error =>{
+    console.log(`Error in parsing GET request to /api/videos/trending: ${error}`);
+    res.json(constructResponse(false, `There was an error with retrieving the trending videos. Sorry!`, {videos: [], count: -1}));
+  });
 });
 
 //CREATE VIDEO ENDPOINT
@@ -67,6 +89,7 @@ app.post('/api/videos', (req,res) => {
           newVideo.created = new Date(); //adding and initializing parameters
           newVideo.upvotes = 0;
           newVideo.downvotes = 0;
+          newVideo.sectionIdx = parseInt(newVideo.sectionIdx,10);
 
           db.collection('videos').insertOne(newVideo) //Adding it to our collection
           .then(result => db.collection('videos').find({_id: result.insertedId}).limit(1).next()) //finding it again to return it as part of the JSON
@@ -110,12 +133,12 @@ app.put('/api/videos',(req,res) => {
     operation = "downvote";
   }
 
-  if(video[operation]) value = 1; //if the field is true, we increment, else decrement
+  if(video[operation]) value = 1; //if the operation property in the video object is true, we increment, else decrement
   else value = -1;
 
   db.collection('videos').updateOne(
     {wikiPageId: video.wikiPageId, sectionIdx: video.sectionIdx, ytId: video.ytId}, //finding the video
-    { $inc: {[field]: value}} //updating the field with the appropriate action
+    { $inc: {[field]: value}} //updating the field with the appropriate action and value
   )
   .then(result => {
     //if no video object matches what we are trying to update
@@ -135,6 +158,37 @@ app.put('/api/videos',(req,res) => {
 
 
 // Helpers/Constants
+
+const getSectionIds = (videos) => {
+  let sectionIDSet = new Set();
+  videos.forEach(video => {
+    sectionIDSet.add(video["sectionIdx"]);
+  })
+  return Array.from(sectionIDSet);
+}
+
+const sortVideos = (videos,applyFilter) => {
+  let sortedVideos = [];
+  if(applyFilter){
+    let sectionIDList = getSectionIds(videos);
+    sectionIDList.forEach(sectionID => {
+      let sectionVideos = videos.filter(video => video["sectionIdx"] === sectionID);
+      let sortedSectionVideos = sectionVideos.sort(compareVideos).reverse();
+      sortedVideos = sortedVideos.concat(sortedSectionVideos.slice(0,3));
+      console.log(sortedSectionVideos.slice(0,3));
+    });
+  }
+  else sortedVideos = videos.sort(compareVideos).reverse().slice(0,3);
+
+  return sortedVideos;
+}
+
+const compareVideos = (v1,v2) => {
+  let v1Score = v1["upvotes"] - v1["downvotes"];
+  let v2Score = v2["upvotes"] - v2["downvotes"];
+  return v1Score - v2Score;
+}
+
 
 const buildUrl =  (id) => {
   let ytApiSearchParams = new URLSearchParams(ytApiUrl.search);
@@ -177,3 +231,7 @@ const ytApiParams = {
 const ytApiKey = "AIzaSyCCnoDp8ullFubmLqfEJdbs5EmmQ37mu2s"; //hardcoded auth key for YT API I made
 
 const ytApiUrl = new URL("https://www.googleapis.com/youtube/v3/videos?"); //specific endpoint we need to hit for youtube video data
+
+//To-Do List:
+//TODO: Standardize error messages(There was.., Error:.., Error in..)
+//TODO: Clean-up error catching
