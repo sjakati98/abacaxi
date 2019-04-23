@@ -30,13 +30,13 @@ app.get('/api/videos/:id', (req,res) => {
   
   db.collection('videos').find({wikiPageId: wikiId}).count()
   .then(count => {
-    if(count == 0)  res.json(constructResponse(true,`No videos for wikiPage: ${wikiId} found!`, {videos: [], count:count})); 
+    if(count == 0) res.json(constructResponse(true,`No videos for wikiPage: ${wikiId} found!`, {videos: [], count:count})); 
     else {
       db.collection('videos').find({wikiPageId: wikiId}).toArray()
       .then(pageVideos => {
         let reconstructedVideos = [];
         pageVideos.forEach(video => reconstructedVideos.push(reconstructVideo(video)));
-        let sortedAndFilteredVideos = sortAndFilterVideos(reconstructedVideos);
+        let sortedAndFilteredVideos = sortVideos(reconstructedVideos,true);
         res.json(constructResponse(true,`Successfully found list of videos for Wiki Page with id: ${wikiId}`, {videos: sortedAndFilteredVideos, count: sortedAndFilteredVideos.length}));
       });
     }
@@ -44,6 +44,28 @@ app.get('/api/videos/:id', (req,res) => {
     console.log(`Error in parsing GET request to /api/videos/${wikiId}: ${error}`);
     res.json(constructResponse(false, `There was an error with retrieving the videos for this page. Sorry!`, {videos: [], count: -1}));
   }); 
+});
+
+//GET TRENDING VIDEOS ENDPOINT
+
+app.get('/api/trending', (req,res) => {
+  db.collection('videos').find().count()
+  .then(count =>{
+    if(count == 0) {
+      res.json(constructResponse(true,`There are no trending videos!`, {videos: [], count:count}));
+      return;
+    }
+    db.collection('videos').find().toArray()
+    .then(allVideos => {
+      let reconstructedVideos = [];
+      allVideos.forEach(video => reconstructedVideos.push(reconstructVideo(video)));
+      let sortedVideos = sortVideos(reconstructedVideos,false);
+      res.json(constructResponse(true,`Successfully found top 3 trending videos!`, {videos: sortedVideos, count: sortedVideos.length}));
+    })
+  }).catch(error =>{
+    console.log(`Error in parsing GET request to /api/videos/trending: ${error}`);
+    res.json(constructResponse(false, `There was an error with retrieving the trending videos. Sorry!`, {videos: [], count: -1}));
+  });
 });
 
 //CREATE VIDEO ENDPOINT
@@ -111,12 +133,12 @@ app.put('/api/videos',(req,res) => {
     operation = "downvote";
   }
 
-  if(video[operation]) value = 1; //if the field is true, we increment, else decrement
+  if(video[operation]) value = 1; //if the operation property in the video object is true, we increment, else decrement
   else value = -1;
 
   db.collection('videos').updateOne(
     {wikiPageId: video.wikiPageId, sectionIdx: video.sectionIdx, ytId: video.ytId}, //finding the video
-    { $inc: {[field]: value}} //updating the field with the appropriate action
+    { $inc: {[field]: value}} //updating the field with the appropriate action and value
   )
   .then(result => {
     //if no video object matches what we are trying to update
@@ -145,15 +167,20 @@ const getSectionIds = (videos) => {
   return Array.from(sectionIDSet);
 }
 
-const sortAndFilterVideos = (videos) => {
-  let sortedAndFilteredVideos = []
-  let sectionIDList = getSectionIds(videos);
-  sectionIDList.forEach(sectionID => {
-    let sectionVideos = videos.filter(video => video["sectionIdx"] === sectionID);
-    let sortedSectionVideos = sectionVideos.sort(compareVideos).reverse();
-    sortedAndFilteredVideos = sortedAndFilteredVideos.concat(sortedSectionVideos.slice(0,3));
-  });
-  return sortedAndFilteredVideos;
+const sortVideos = (videos,applyFilter) => {
+  let sortedVideos = [];
+  if(applyFilter){
+    let sectionIDList = getSectionIds(videos);
+    sectionIDList.forEach(sectionID => {
+      let sectionVideos = videos.filter(video => video["sectionIdx"] === sectionID);
+      let sortedSectionVideos = sectionVideos.sort(compareVideos).reverse();
+      sortedVideos = sortedVideos.concat(sortedSectionVideos.slice(0,3));
+      console.log(sortedSectionVideos.slice(0,3));
+    });
+  }
+  else sortedVideos = videos.sort(compareVideos).reverse().slice(0,3);
+
+  return sortedVideos;
 }
 
 const compareVideos = (v1,v2) => {
@@ -204,3 +231,7 @@ const ytApiParams = {
 const ytApiKey = "AIzaSyCCnoDp8ullFubmLqfEJdbs5EmmQ37mu2s"; //hardcoded auth key for YT API I made
 
 const ytApiUrl = new URL("https://www.googleapis.com/youtube/v3/videos?"); //specific endpoint we need to hit for youtube video data
+
+//TODO-LIST:
+//TODO: Standardize error messages(There was.., Error:.., Error in..)
+//TODO: Clean-up error catching
