@@ -1,5 +1,6 @@
 import React from 'react';
 import Navbar from './components/Navbar.jsx';
+import VideoReactionButtons from './components/VideoReactionButtons.jsx'
 
 // This is a place holder for the initial application state.
 const thumbnail_url = id => { return 'http://i3.ytimg.com/vi/' + id + '/hqdefault.jpg' };
@@ -55,7 +56,7 @@ const Video = (props) => (
       <h5 className="card-title">{props.video.title}</h5>
       <p className="card-text">Super dope video about the section</p>
       <a href="#" className="btn btn-primary">Go somewhere fun</a>
-      <VideoLikeButton likes={props.video.likes} />
+      <VideoReactionButtons upvotes={props.video.upvotes} downvotes={props.video.downvotes} videoInfo={props.video}/>
     </div>
   </div>
 );
