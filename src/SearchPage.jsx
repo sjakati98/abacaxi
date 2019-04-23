@@ -3,25 +3,28 @@ import React from 'react';
 // This is a place holder for the initial application state.
 const exampleList = [
   {
-    id: 1,
-    title: "test item 1",
-    url: "contentpage.html",
-    description: "This is the first test item",
-    imgUrl: "/img/cool-pineapple.png"
+    "wikiPageId": 76894,
+    "sectionIdx": 3,
+    "ytId": "KFRhYuB93qk",
+    "title": "FFXIV Kafka's Theme",
+    "upvotes": 3,
+    "downvotes": 0
   },
   {
-    id: 2,
-    title: "test item 2",
-    url: "contentpage.html",
-    description: "This is the second test item",
-    imgUrl: "/img/cool-pineapple.png"
+    "wikiPageId": 76894,
+    "sectionIdx": 3,
+    "ytId": "u20Py_d2aI8",
+    "title": "FFXIV Suzaku's Theme",
+    "upvotes": 3,
+    "downvotes": 0
   },
   {
-    id: 3,
-    title: "test item 3",
-    url: "contentpage.html",
-    description: "This is the third test item",
-    imgUrl: "/img/cool-pineapple.png"
+    "wikiPageId": 76894,
+    "sectionIdx": 3,
+    "ytId": "Bxpu6tbFCsI",
+    "title": "Emu War - OverSimplified",
+    "upvotes": 3,
+    "downvotes": 0
   }
 ];
 
@@ -49,7 +52,7 @@ class TrendingCard extends React.Component {
 
 class TrendingCardProt extends React.Component {
   render() {
-    let trendingData = [];
+    let trendingData = this.props.exampleList;
     fetch('/api/trending', {
       method: 'get'
     })
