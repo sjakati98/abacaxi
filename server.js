@@ -36,7 +36,8 @@ app.get('/api/videos/:id', (req,res) => {
       .then(pageVideos => {
         let reconstructedVideos = [];
         pageVideos.forEach(video => reconstructedVideos.push(reconstructVideo(video)));
-        res.json(constructResponse(true,`Successfully found list of videos for Wiki Page with id: ${wikiId}`, {videos: reconstructedVideos, count: count}));
+        let sortedAndFilteredVideos = sortAndFilterVideos(reconstructedVideos);
+        res.json(constructResponse(true,`Successfully found list of videos for Wiki Page with id: ${wikiId}`, {videos: sortedAndFilteredVideos, count: sortedAndFilteredVideos.length}));
       });
     }
   }).catch(error => {
@@ -135,6 +136,32 @@ app.put('/api/videos',(req,res) => {
 
 
 // Helpers/Constants
+
+const getSectionIds = (videos) => {
+  let sectionIDSet = new Set();
+  videos.forEach(video => {
+    sectionIDSet.add(video["sectionIdx"]);
+  })
+  return Array.from(sectionIDSet);
+}
+
+const sortAndFilterVideos = (videos) => {
+  let sortedAndFilteredVideos = []
+  let sectionIDList = getSectionIds(videos);
+  sectionIDList.forEach(sectionID => {
+    let sectionVideos = videos.filter(video => video["sectionIdx"] === sectionID);
+    let sortedSectionVideos = sectionVideos.sort(compareVideos).reverse();
+    sortedAndFilteredVideos = sortedAndFilteredVideos.concat(sortedSectionVideos.slice(0,3));
+  });
+  return sortedAndFilteredVideos;
+}
+
+const compareVideos = (v1,v2) => {
+  let v1Score = v1["upvotes"] - v1["downvotes"];
+  let v2Score = v2["upvotes"] - v2["downvotes"];
+  return v1Score - v2Score;
+}
+
 
 const buildUrl =  (id) => {
   let ytApiSearchParams = new URLSearchParams(ytApiUrl.search);
