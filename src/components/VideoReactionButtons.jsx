@@ -83,10 +83,14 @@ export default class VideoReactionButtons extends React.Component {
     }
 
     render(){
+
+        let upvoteButtonColor = (this.state.upvoteButtonActive) ? "btn btn-success" : "btn btn-light"
+        let downvoteButtonColor = (this.state.downvoteButtonActive) ? "btn btn-danger" : "btn btn-light"
+
         return(
             <div className="row">
-                <button onClick={this.handleUpvote}>Upvote {this.state.upvotes}</button>
-                <button onClick={this.handleDownvote}>Downvote {this.state.downvotes}</button>
+                <button  className={upvoteButtonColor} onClick={this.handleUpvote}>Upvote {this.state.upvotes}</button>
+                <button className={downvoteButtonColor} onClick={this.handleDownvote}>Downvote {this.state.downvotes}</button>
             </div>
         )
     }
