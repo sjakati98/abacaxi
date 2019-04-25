@@ -62,7 +62,7 @@ const Video = (props) => (
 
 const AddVideoModal = (props) => (
   <div>
-    <div style="display:flex; justify-content:flex-end; width:100%; padding:0;">
+    <div id="buttonOnRight">
       <button type="button" className="btn btn-primary" data-toggle="modal" data-target="#AddVideoModal">Add Video</button>
     </div>
     <div className="modal fade" id="AddVideoModal" tabIndex="-1" role="dialog" aria-labelledby="AddVideoModalTitle" aria-hidden="true">
