@@ -1,53 +1,21 @@
 import React from 'react';
 
 // This is a place holder for the initial application state.
-const exampleList = [
-  {
-    id: 1,
-    title: "test item 1",
-    url: "contentpage.html",
-    description: "This is the first test item",
-    imgUrl: "/img/cool-pineapple.png"
-  },
-  {
-    id: 2,
-    title: "test item 2",
-    url: "contentpage.html",
-    description: "This is the second test item",
-    imgUrl: "/img/cool-pineapple.png"
-  },
-  {
-    id: 3,
-    title: "test item 3",
-    url: "contentpage.html",
-    description: "This is the third test item",
-    imgUrl: "/img/cool-pineapple.png"
-  }
-];
-
-class TrendingItem extends React.Component {
-  render() {
-    const item = this.props.item;
-    return (
-      <tr>
-        <th style={{ padding: 10 }}><a href={item.url}>{item.title}</a></th>
-      </tr>
-    );
-  }
-}
 
 class TrendingCard extends React.Component {
   render() {
     const item = this.props.item;
+    const yturl = 'https://youtube.com/watch?v=' + item.ytId;
+    const ytimg = 'http://i3.ytimg.com/vi/' + item.ytId + '/hqdefault.jpg';
     return (
-      <div className="col">
+      <div className="col" style={{width: "33%"}}>
         <div className="card card-body">
-          <div className="card" style={{width: "18rem"}}>
-            <img src={item.imgUrl} className="card-img-top" alt="..."></img>
+          <div className="card">
+            <img src={ytimg} className="card-img-top" alt="..."></img>
             <div className="card-body">
               <h5 className="card-title">{item.title}</h5>
-              <p className="card-text">{item.description}</p>
-              <a href={item.url} className="btn btn-primary">Go to the page</a>
+              <p className="card-text">Very Popular with {item.upvotes} likes!</p>
+              <a href={yturl} className="btn btn-primary">Go to the Youtube page</a>
             </div>
           </div>
         </div>
@@ -56,39 +24,21 @@ class TrendingCard extends React.Component {
   }
 }
 
-class TrendingTableProt extends React.Component {
-  render() {
-    const trendingItems = this.props.exampleList.map(item => (
-      <TrendingItem key={item.id} item={item} />
-    ));
-    return (
-      <table style={{ width: '100%'}}>
-        <thread>
-          <tr>
-          <th style={{ padding: 10 }}><h2>What's Popular</h2></th>
-          </tr>
-        </thread>
-        <tbody>{trendingItems}</tbody>
-      </table>
-    );
-  }
-}
-
 class TrendingCardProt extends React.Component {
   render() {
-    const trendingCards = this.props.exampleList.map(item => (
-      <TrendingCard key={item.id} item={item} />
+    const trendingCards = this.props.trendingData.map(item => (
+      <TrendingCard key={item.ytId} item={item} />
     ));
     return (
       <div className="row">
         <div className="col">
           <p>
-            <a data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+            <a className="btn btn-primary" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
               <h2>See Popular Sites</h2>
             </a>
           </p>
           <div className="collapse" id="collapseExample">
-            <div className="row">
+            <div className="row" style={{width: "95%"}}>
               {trendingCards}
             </div>
           </div>
@@ -153,8 +103,31 @@ let TitleLogo = (props) => (
 export default class SearchPage extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {exampleList: exampleList};
+    this.state = {};
     this.handleSearch = this.handleSearch.bind(this);
+    this.loadRendingData = this.loadRendingData.bind(this);
+  }
+
+  componentDidMount() {
+    this.loadRendingData();
+    console.log("component mounted");
+    console.log(this.state.trendingData);
+  }
+
+  loadRendingData() {
+    fetch('/api/trending', {
+      method: 'get'
+    })
+      .then(res => res.json())
+      .then(json => {
+        if (json.success) {
+          this.setState({ trendingData: json.videos });
+          console.log("Data should be saved");
+        }
+        else {
+          alert('Failed to get trending videos.\n Error description: ' + json.msg);
+        }
+      });
   }
 
   handleSearch(e){
@@ -164,13 +137,14 @@ export default class SearchPage extends React.Component {
   }
 
   render() {
+    let loadingTrending = <h1>......Loading......</h1>
+    let trendingBar = (this.state.trendingData != null) ? <TrendingCardProt trendingData={this.state.trendingData} /> : loadingTrending
     return (
       <div>
           <TitleLogo />
           <SearchForm handleSearch={this.handleSearch}/>
-          <TrendingTableProt exampleList={this.state.exampleList} />
           <hr />
-          <TrendingCardProt exampleList={this.state.exampleList} />
+          {trendingBar}
       </div>
     );
   }
