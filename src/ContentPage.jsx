@@ -64,6 +64,7 @@ const Video = (props) => (
 const AddVideoModal = (props) => (
   <div>
     <div id="buttonOnRight">
+      <a href={`https://en.wikipedia.org/wiki/?curid=${props.wikiID}`} target="_blank" className="btn btn-outline-primary" style={{marginRight: '8px'}}>Go to Wikipedia Page</a>
       <button type="button" className="btn btn-primary" data-toggle="modal" data-target="#AddVideoModal">Add Video</button>
     </div>
     <div className="modal fade" id="AddVideoModal" tabIndex="-1" role="dialog" aria-labelledby="AddVideoModalTitle" aria-hidden="true">
@@ -163,7 +164,7 @@ function Section(props) {
   return (
     <div className="container" style={{ paddingBottom: '15px', marginBottom: '15px', borderBottom: "1px solid grey" }}>
       <div className="row">
-        <CustomHeader>{props.section.line}</CustomHeader>
+        <CustomHeader dangerouslySetInnerHTML={{__html: props.section.line}}></CustomHeader>
         <hr />
         <div className="col-12" style={{ "overflowX": "auto" }}>
           {videos}
