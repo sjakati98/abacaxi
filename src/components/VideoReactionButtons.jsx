@@ -21,49 +21,20 @@ export default class VideoReactionButtons extends React.Component {
     handleUpvote(e){
         //handle SyntheticEvent
         e.preventDefault();
-        let updateRequest = {
-        "video": {
-            "wikiPageId": this.state.videoInfo.wikiPageId,
-            "sectionIdx": this.state.videoInfo.sectionIdx,
-            "ytId": this.state.videoInfo.ytId,
-            "upvote": true
-        }
-        }
-        if (!this.state.click){
-        fetch('/api/videos', {
-            method: 'put',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(updateRequest),
-        })
-        .then(res => res.json())
-        .then(json => {
-            if (json.success){
-            this.setState(prevState => ({
-                click: true,
-                upvoteButtonActive: true,
-                upvotes: prevState.upvotes + 1
-            }));
-            }
-            else{
-            alert(json.msg)
-            }
-        })
-        }
-    }
 
-    handleDownvote(e){
-         // handle SyntheticEvent
-        e.preventDefault();
-
+        // declare the PUT request according to the API specification
         let updateRequest = {
             "video": {
                 "wikiPageId": this.state.videoInfo.wikiPageId,
                 "sectionIdx": this.state.videoInfo.sectionIdx,
                 "ytId": this.state.videoInfo.ytId,
-                "downvote": true
+                "upvote": true
             }
         }
+
+        // make sure no action has been taken previously
         if (!this.state.click){
+            // make the PUT request
             fetch('/api/videos', {
                 method: 'put',
                 headers: { 'Content-Type': 'application/json' },
@@ -72,11 +43,53 @@ export default class VideoReactionButtons extends React.Component {
             .then(res => res.json())
             .then(json => {
                 if (json.success){
+                //update state if the request was successful
                 this.setState(prevState => ({
                     click: true,
-                    downvoteButtonActive: true,
-                    downvotes: prevState.downvotes + 1
+                    upvoteButtonActive: true,
+                    upvotes: prevState.upvotes + 1
                 }));
+                }
+                // if the request was not successful then alert the error message
+                else{
+                alert(json.msg)
+                }
+            })
+        }
+    }
+
+    handleDownvote(e){
+         // handle SyntheticEvent
+        e.preventDefault();
+        // declare the PUT request according to the API specification
+        let updateRequest = {
+            "video": {
+                "wikiPageId": this.state.videoInfo.wikiPageId,
+                "sectionIdx": this.state.videoInfo.sectionIdx,
+                "ytId": this.state.videoInfo.ytId,
+                "downvote": true
+            }
+        }
+        // make sure no action has been taken previously
+        if (!this.state.click){
+            // make the request
+            fetch('/api/videos', {
+                method: 'put',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updateRequest),
+            })
+            .then(res => res.json())
+            .then(json => {
+                if (json.success){
+                    // update the state if the request was successful
+                    this.setState(prevState => ({
+                        click: true,
+                        downvoteButtonActive: true,
+                        downvotes: prevState.downvotes + 1
+                    }));
+                }
+                else{
+                    alert(json.msg);
                 }
             })
         }
