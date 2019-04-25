@@ -163,7 +163,7 @@ function Section(props) {
   return (
     <div className="container" style={{ paddingBottom: '15px', marginBottom: '15px', borderBottom: "1px solid grey" }}>
       <div className="row">
-        <CustomHeader>{props.section.line}</CustomHeader>
+        <CustomHeader dangerouslySetInnerHTML={{__html: props.section.line}}></CustomHeader>
         <hr />
         <div className="col-12" style={{ "overflowX": "auto" }}>
           {videos}
