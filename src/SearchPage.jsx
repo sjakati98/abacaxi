@@ -8,9 +8,9 @@ class TrendingCard extends React.Component {
     const yturl = 'https://youtube.com/watch?v=' + item.ytId;
     const ytimg = 'http://i3.ytimg.com/vi/' + item.ytId + '/hqdefault.jpg';
     return (
-      <div className="col">
+      <div className="col" style={{width: "33%"}}>
         <div className="card card-body">
-          <div className="card" style={{width: "18rem"}}>
+          <div className="card">
             <img src={ytimg} className="card-img-top" alt="..."></img>
             <div className="card-body">
               <h5 className="card-title">{item.title}</h5>
@@ -33,12 +33,12 @@ class TrendingCardProt extends React.Component {
       <div className="row">
         <div className="col">
           <p>
-            <a data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+            <a className="btn btn-primary" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
               <h2>See Popular Sites</h2>
             </a>
           </p>
           <div className="collapse" id="collapseExample">
-            <div className="row">
+            <div className="row" style={{width: "95%"}}>
               {trendingCards}
             </div>
           </div>
