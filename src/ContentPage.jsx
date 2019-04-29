@@ -54,8 +54,6 @@ const Video = (props) => (
     <a href={video_url(props.video.ytId)}><img className="card-img-top" src={thumbnail_url(props.video.ytId)} alt="Card image cap"></img></a>
     <div className="card-body">
       <h5 className="card-title">{props.video.title}</h5>
-      <p className="card-text">Super dope video about the section</p>
-      <a href="#" className="btn btn-primary">Go somewhere fun</a>
       <VideoReactionButtons upvotes={props.video.upvotes} downvotes={props.video.downvotes} videoInfo={props.video}/>
     </div>
   </div>
