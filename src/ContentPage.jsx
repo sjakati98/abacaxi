@@ -6,6 +6,11 @@ import VideoReactionButtons from './components/VideoReactionButtons.jsx'
 const thumbnail_url = id => { return 'http://i3.ytimg.com/vi/' + id + '/hqdefault.jpg' };
 const video_url = id => { return 'https://youtube.com/watch?v=' + id };
 
+const truncate_str = (str, len) => {
+  if (str.length < len) { return str; }
+  return str.substring(0, len-3) + "..."
+}
+
 
 class VideoLikeButton extends React.Component {
   constructor(props) {
@@ -53,7 +58,7 @@ const Video = (props) => (
   <div className="card" style={{ width: "18rem", float: "left", marginRight: "8px" }}>
     <a href={video_url(props.video.ytId)}><img className="card-img-top" src={thumbnail_url(props.video.ytId)} alt="Card image cap"></img></a>
     <div className="card-body">
-      <h5 className="card-title">{props.video.title}</h5>
+      <h5 className="card-title">{truncate_str(props.video.title, 46)}</h5>
       <VideoReactionButtons upvotes={props.video.upvotes} downvotes={props.video.downvotes} videoInfo={props.video}/>
     </div>
   </div>
