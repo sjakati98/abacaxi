@@ -1,68 +1,8 @@
 import React from 'react';
 import Navbar from './components/Navbar.jsx';
-import VideoReactionButtons from './components/VideoReactionButtons.jsx'
+import AllVideosCollapse from './components/AllVideosCollapse.jsx';
+import VideoCard from './components/VideoCard.jsx';
 
-// This is a place holder for the initial application state.
-const thumbnail_url = id => { return 'http://i3.ytimg.com/vi/' + id + '/hqdefault.jpg' };
-const video_url = id => { return 'https://youtube.com/watch?v=' + id };
-
-const truncate_str = (str, len) => {
-  if (str.length < len) { return str; }
-  return str.substring(0, len-3) + "..."
-}
-
-
-class VideoLikeButton extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      likes: props.likes, // when using the database this needs to be changed because we're only using a derived state here
-      // so when using a database, there should be no need to set an initial state; this is just for PoC
-      clickedFlag: false,
-    }
-  }
-
-  handleLikeClick() {
-    if (this.state.clickedFlag) {
-      this.setState(function (prevState, _) {
-        return {
-          likes: prevState.likes - 1,
-          clickedFlag: !prevState.clickedFlag
-        };
-      })
-    }
-    else {
-      this.setState(function (prevState, _) {
-        return {
-          likes: prevState.likes + 1,
-          clickedFlag: !prevState.clickedFlag
-        };
-      })
-    }
-
-  }
-
-  render() {
-
-    let buttonTag = (this.state.clickedFlag) ? "btn-success" : "btn-light"
-
-    return (
-      <button type="button" className={`btn ${buttonTag}`} onClick={this.handleLikeClick.bind(this)}>
-        Likes {this.state.likes}
-      </button>
-    )
-  }
-}
-
-const Video = (props) => (
-  <div className="card" style={{ width: "18rem", float: "left", marginRight: "8px" }}>
-    <a href={video_url(props.video.ytId)}><img className="card-img-top" src={thumbnail_url(props.video.ytId)} alt="Card image cap"></img></a>
-    <div className="card-body">
-      <h5 className="card-title">{truncate_str(props.video.title, 46)}</h5>
-      <VideoReactionButtons upvotes={props.video.upvotes} downvotes={props.video.downvotes} videoInfo={props.video}/>
-    </div>
-  </div>
-);
 
 const AddVideoModal = (props) => (
   <div>
@@ -109,7 +49,7 @@ class AddVideoForm extends React.Component {
     let form = document.forms.videoAdd;
     const submitReq = {
       "video": {
-        "wikiPageId": this.state.wikiID,
+        "wikiPageId": parseInt(this.state.wikiID),
         "sectionIdx": form.wikiPageContentIndex.value,
         "ytId": form.videoID.value
       }
@@ -157,21 +97,23 @@ const Selection = (props) => (
   <option value={props.section.index}>{props.section.index}. {props.section.line}</option>
 )
 
-
-
 function Section(props) {
   const CustomHeader = `h${props.section.level}`;
-  const videos = props.videos.map(video => (
-    <Video key={video.ytId} video={video} />
+
+  let cardVideos = props.videos.slice(0, 3);
+  const videoCards = cardVideos.map(video => (
+    <VideoCard key={video.ytId} video={video} />
   ));
+  let allVideosCollapse =  (props.videos.length > 3) ? <AllVideosCollapse index={props.section.index} videos={props.videos} /> : "";
   return (
     <div className="container" style={{ paddingBottom: '15px', marginBottom: '15px', borderBottom: "1px solid grey" }}>
       <div className="row">
         <CustomHeader dangerouslySetInnerHTML={{__html: props.section.line}}></CustomHeader>
         <hr />
         <div className="col-12" style={{ "overflowX": "auto" }}>
-          {videos}
+          {videoCards}
         </div>
+        {allVideosCollapse}
       </div>
     </div>
   );
@@ -231,14 +173,8 @@ export default class ContentPage extends React.Component {
       .then(res => {
         if (res.ok) {
           res.json().then(json => {
-            let videos = [];
-            json.videos.forEach(video => {
-              videos.push(
-                video
-              )
-            });
-            this.setState({ videos: videos })
-          })
+            this.setState({ videos: json.videos });
+          });
         }
       }).catch(err => {
         alert("There was a problemo: " + err.message)
