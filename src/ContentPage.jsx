@@ -97,7 +97,7 @@ class AddVideoForm extends React.Component {
     let form = document.forms.videoAdd;
     const submitReq = {
       "video": {
-        "wikiPageId": this.state.wikiID,
+        "wikiPageId": parseInt(this.state.wikiID),
         "sectionIdx": form.wikiPageContentIndex.value,
         "ytId": form.videoID.value
       }
