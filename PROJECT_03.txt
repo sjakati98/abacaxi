@@ -1,0 +1,31 @@
+# Project 03 Submission (Final)
+
+# Team Members
+
+1. ARMAND ASNANI, AASNANI@UMASS.EDU
+2. YUANXUN TAO, YUANXUNTAO@UMASS.EDU
+3. SEAN KELLEY, SGKELLEY@UMASS.EDU
+4. SHISHIR JAKATI, SJAKATI@UMASS.EDU
+
+
+# Project Description
+
+Abacaxi is a web application designed to ease the process of finding additional materials, mainly video, 
+through which interested parties may learn more about a specific topic. It pulls the exact page structure
+from the Wikipedia Page corresponding to the topic, with application specific styles applied to it. Under
+each heading, however, resides user submitted videos that relate to the respective topic. The main draw of 
+Abacaxi is that videos are submitted by users themselves, and are subsequently voted on by users.
+
+# Project Extension
+
+Two separate project extensions we performed were the modularization of our application with Webpack, and the 
+addition of a router. To complete the modularization, we moved both our pure stateless components and our
+stateful components into separate files within a component folder. To use the router we installed react-router
+and utilized a Router component as a wrapper around our top level App component.
+
+# GitHub URL
+
+github.com/sjakati98/Abacaxi
+
+# Link to video
+
