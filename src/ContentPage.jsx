@@ -38,7 +38,7 @@ const AllVideosCollapse = (props) => (
               return (
                 <div key={video.ytId} className='col-12' style={{ height: '100px', marginTop: '5px' }}>
                   <a href={video_url(video.ytId)}><img style={{ height: '100px' }} src={thumbnail_url(video.ytId)}></img></a>
-                  <span style={{ marginLeft: '10px' }}>{video.title}</span>
+                  <span style={{ marginLeft: '10px' }}>{truncate_str(video.title, 62)}</span>
                   <div style={{ float: 'right', marginTop: '25px' }}>
                     <VideoReactionButtons style={{ float: 'right' }} upvotes={video.upvotes} downvotes={video.downvotes} videoInfo={video}/>
                   </div>
