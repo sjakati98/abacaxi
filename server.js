@@ -175,8 +175,7 @@ const sortVideos = (videos,applyFilter) => {
     sectionIDList.forEach(sectionID => {
       let sectionVideos = videos.filter(video => video["sectionIdx"] === sectionID);
       let sortedSectionVideos = sectionVideos.sort(compareVideos).reverse();
-      sortedVideos = sortedVideos.concat(sortedSectionVideos.slice(0,3));
-      console.log(sortedSectionVideos.slice(0,3));
+      sortedVideos = sortedVideos.concat(sortedSectionVideos);
     });
   }
   else sortedVideos = videos.sort(compareVideos).reverse().slice(0,3);
