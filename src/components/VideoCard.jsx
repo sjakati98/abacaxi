@@ -1,13 +1,6 @@
 import React from 'react';
-import VideoReactionButtons from './VideoReactionButtons.jsx'
-
-const thumbnail_url = id => { return 'http://i3.ytimg.com/vi/' + id + '/hqdefault.jpg' };
-const video_url = id => { return 'https://youtube.com/watch?v=' + id };
-
-const truncate_str = (str, len) => {
-    if (str.length < len) { return str; }
-    return str.substring(0, len-3) + "..."
-}
+import VideoReactionButtons from './VideoReactionButtons.jsx';
+import { thumbnail_url, video_url, truncate_str } from '../utils.jsx';
 
 export default class VideoCard extends React.Component {
     constructor(props){
