@@ -18,9 +18,9 @@ Abacaxi is that videos are submitted by users themselves, and are subsequently v
 
 # Project Extension
 
-Two separate project extensions we performed were the modularization of our application with Webpack, and the 
+The two separate project extensions we performed were the modularization of our application with Webpack, and the 
 addition of a router. To complete the modularization, we moved both our pure stateless components and our
-stateful components into separate files within a component folder. To use the router we installed react-router
+stateful components into separate files within a component folder. To use the router, we installed react-router
 and utilized a Router component as a wrapper around our top level App component.
 
 # GitHub URL
