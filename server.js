@@ -84,12 +84,13 @@ app.post('/api/videos', (req,res) => {
         //If the youtube ID they submit is invalid
         if(response.pageInfo.totalResults == 0|| response.pageInfo.resultsPerPage == 0) res.json(constructResponse(false, `The video ID you submitted is not a valid ID. Please re-check this information!`, { video:{} }));
         else {
-          let title = response.items[0].snippet.title; //title from the Youtube video API //TODO: Don't make this hardcoded
-          newVideo.title = title;
+          let youtubeTitle = response.items[0].snippet.title; //title from the Youtube video API //TODO: Don't make this hardcoded
+          newVideo.title = youtubeTitle;
           newVideo.created = new Date(); //adding and initializing parameters
           newVideo.upvotes = 0;
           newVideo.downvotes = 0;
           newVideo.sectionIdx = parseInt(newVideo.sectionIdx,10);
+          newVideo.wikiPageId = parseInt(newVideo.wikiPageId,10);
 
           db.collection('videos').insertOne(newVideo) //Adding it to our collection
           .then(result => db.collection('videos').find({_id: result.insertedId}).limit(1).next()) //finding it again to return it as part of the JSON
@@ -174,8 +175,7 @@ const sortVideos = (videos,applyFilter) => {
     sectionIDList.forEach(sectionID => {
       let sectionVideos = videos.filter(video => video["sectionIdx"] === sectionID);
       let sortedSectionVideos = sectionVideos.sort(compareVideos).reverse();
-      sortedVideos = sortedVideos.concat(sortedSectionVideos.slice(0,3));
-      console.log(sortedSectionVideos.slice(0,3));
+      sortedVideos = sortedVideos.concat(sortedSectionVideos);
     });
   }
   else sortedVideos = videos.sort(compareVideos).reverse().slice(0,3);
