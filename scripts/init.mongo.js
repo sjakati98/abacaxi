@@ -106,7 +106,7 @@ db.videos.insert([
         wikiPageId: 460187,
         sectionIdx: 2,
         created: new Date(),
-        ytId: "jcojLPkZNo7MFNFg6zsXk",
+        ytId: "PkZNo7MFNFg",
         title: "Learn JavaScript - Full Course for Beginners",
         upvotes: 400,
         downvotes: 6
