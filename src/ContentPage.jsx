@@ -1,56 +1,8 @@
 import React from 'react';
 import Navbar from './components/Navbar.jsx';
-import VideoReactionButtons from './components/VideoReactionButtons.jsx'
+import AllVideosCollapse from './components/AllVideosCollapse.jsx';
+import VideoCard from './components/VideoCard.jsx';
 
-// This is a place holder for the initial application state.
-const thumbnail_url = id => { return 'http://i3.ytimg.com/vi/' + id + '/hqdefault.jpg' };
-const video_url = id => { return 'https://youtube.com/watch?v=' + id };
-
-const truncate_str = (str, len) => {
-  if (str.length < len) { return str; }
-  return str.substring(0, len-3) + "..."
-}
-
-const VideoCard = (props) => (
-  <div className="card" style={{ width: "18rem", float: "left", marginRight: "8px" }}>
-    <a href={video_url(props.video.ytId)}><img className="card-img-top" src={thumbnail_url(props.video.ytId)} alt="Card image cap"></img></a>
-    <div className="card-body">
-      <h5 className="card-title">{truncate_str(props.video.title, 38)}</h5>
-      <VideoReactionButtons upvotes={props.video.upvotes} downvotes={props.video.downvotes} videoInfo={props.video}/>
-    </div>
-  </div>
-);
-
-const AllVideosCollapse = (props) => (
-  <div className="col-12" style={{ "overflowX": "auto", 'marginTop': '15px' }}>
-    <div className="accordion">
-      <div className="card">
-        <div className="card-header" style={{ 'cursor': 'pointer' }} data-toggle="collapse" data-target={`#collapse${props.index}`} aria-expanded="true" aria-controls="collapseOne">
-          <h2 className="mb-0" style={{ textAlign: 'center' }}>
-            <button className="btn btn-link" type="button" >
-              View All Videos
-            </button>
-          </h2>
-        </div>
-        <div id={`collapse${props.index}`} className="collapse" >
-          <div className="card-body row">
-            {props.videos.map((video, index) => {
-              return (
-                <div key={video.ytId} className='col-12' style={{ height: '100px', marginTop: '5px' }}>
-                  <a href={video_url(video.ytId)}><img style={{ height: '100px' }} src={thumbnail_url(video.ytId)}></img></a>
-                  <span style={{ marginLeft: '10px' }}>{truncate_str(video.title, 62)}</span>
-                  <div style={{ float: 'right', marginTop: '25px' }}>
-                    <VideoReactionButtons style={{ float: 'right' }} upvotes={video.upvotes} downvotes={video.downvotes} videoInfo={video}/>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-);
 
 const AddVideoModal = (props) => (
   <div>
