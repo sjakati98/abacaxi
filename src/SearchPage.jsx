@@ -1,5 +1,6 @@
 import React from 'react';
 import TitleLogo from './components/TitleLogo.jsx';
+import SearchForm from './components/SearchForm.jsx';
 
 // This is a place holder for the initial application state.
 
@@ -48,46 +49,6 @@ class TrendingCardProt extends React.Component {
     );
   }
 }
-
-
-let InfoModal = (props) => (
-
-  <div className="modal fade" id="howItWorksModal" tabIndex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
-    <div className="modal-dialog" role="document">
-      <div className="modal-content">
-        <div className="modal-header">
-          <h5 className="modal-title" id="exampleModalLongTitle">How Abacaxi Works</h5>
-          <button type="button" className="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div className="modal-body">
-          <ul id='howItWorksList'>
-            <li>Abacaxi works by taking your entered search term and attempting to match it to a content page stored in the database.</li>
-
-            <li>Each content page is constructed from an existing Wiki Page's structure and populated with videos from the internet that Abacaxi's community feels best explains or describes the main topic and its subsequent subtopics or child topics.</li>
-
-            <li>Users of Abacaxi can similarly submit their own suggestions and vote on such videos to provide their own input.</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
-
-);
-
-let SearchForm = (props) => (
-      <form id='searchForm' onSubmit={props.handleSearch}>
-        <div className="form-row justify-content-md-center">
-          <div className="col-md-4">
-            <input type='text' id='searchQuery' className="form-control" placeholder='Enter a search term here'/>
-          </div>
-          <button type="submit" id='search-btn' className="btn btn-success">Search</button>
-          <button type="button" className="btn btn-outline-dark" data-toggle="modal" data-target="#howItWorksModal" id="howItWorksBtn">?</button>
-          <InfoModal />
-        </div>
-      </form>
-    );
 
 export default class SearchPage extends React.Component {
   constructor(props) {
