@@ -1,4 +1,5 @@
 import React from 'react';
+import TitleLogo from './components/TitleLogo.jsx';
 
 // This is a place holder for the initial application state.
 
@@ -87,18 +88,6 @@ let SearchForm = (props) => (
         </div>
       </form>
     );
-
-let TitleLogo = (props) => (
-  <div>
-    <div id='bigtitle'>
-      <p id='appname'>Abacaxi</p>
-      <p id='appsubname'>The Spiky Fruit Of Knowledge</p>
-    </div>
-    <div id='logo'>
-      <center><img src='/img/cool-pineapple.png'></img></center>
-    </div>
-  </div>
-);
 
 export default class SearchPage extends React.Component {
   constructor(props) {
