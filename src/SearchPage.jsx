@@ -1,33 +1,9 @@
 import React from 'react';
 import TitleLogo from './components/TitleLogo.jsx';
 import SearchForm from './components/SearchForm.jsx';
-import TrendingCard from './components/TrendingCard.jsx';
+import TrendingBar from './components/TrendingBar.jsx';
 
 // This is a place holder for the initial application state.
-
-class TrendingCardProt extends React.Component {
-  render() {
-    const trendingCards = this.props.trendingData.map(item => (
-      <TrendingCard key={item.ytId} item={item} />
-    ));
-    return (
-      <div className="row">
-        <div className="col">
-          <p>
-            <a className="btn btn-primary" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
-              <h2>See Popular Sites</h2>
-            </a>
-          </p>
-          <div className="collapse" id="collapseExample">
-            <div className="row" style={{width: "95%"}}>
-              {trendingCards}
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-}
 
 export default class SearchPage extends React.Component {
   constructor(props) {
@@ -67,7 +43,7 @@ export default class SearchPage extends React.Component {
 
   render() {
     let loadingTrending = <h1>......Loading......</h1>
-    let trendingBar = (this.state.trendingData != null) ? <TrendingCardProt trendingData={this.state.trendingData} /> : loadingTrending
+    let trendingBar = (this.state.trendingData != null) ? <TrendingBar trendingData={this.state.trendingData} /> : loadingTrending
     return (
       <div>
           <TitleLogo />
